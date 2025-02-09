@@ -7,7 +7,7 @@
 
 # This script should be run from the your home directory on a frontend server
 # Fill these variables in order for the script to work
-PROJECT_NAME="Typo-corrections"
+PROJECT_NAME="typos-correction"
 SERVER_LOCATION="praha1"
 USERNAME="eliasma7"
 DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
@@ -20,7 +20,7 @@ echo "Task started at $(date)"
 test -n "$SCRATCHDIR" || { echo >&2 "SCRATCHDIR is not set!"; exit 1; }
 
 echo "Copying data to $SCRATCHDIR at $(date)"
-cp -r "$DATADIR" "$SCRATC*HDIR" || { echo >&2 "Error copying data to scratch"; exit 1; }
+cp -r "$DATADIR" "$SCRATCHDIR" || { echo >&2 "Error copying data to scratch"; exit 1; }
 echo "Data copied at $(date)"
 
 cd "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Failed to enter scratch directory"; exit 1; }
@@ -34,7 +34,7 @@ echo "Environment created at $(date)"
 
 echo "Starting model execution at $(date)"
 
-python execute_model.py --train_dir="" --test_dir="" --debug --num_epochs=1 || { echo >&2 "Python script failed"; exit 1; }
+python test.py || { echo >&2 "Python script failed"; exit 1; }
 
 # TODO copy results
 
