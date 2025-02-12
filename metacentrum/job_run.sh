@@ -1,21 +1,20 @@
 #!/bin/bash
 #PBS -N BERT_CHECKER
-#PBS -l walltime=20:00:00
+#PBS -l walltime=20:0:0
 #PBS -l select=1:ncpus=1:ngpus=1:gpu_mem=15gb:mem=100gb:scratch_local=100gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
 
 # This script should be run from the your home directory on a frontend server
-# Fill these variables in order for the script to work
 PROJECT_NAME="typos-correction"
 SERVER_LOCATION="praha1"
 USERNAME="eliasma7"
 WANDB_API_KEY="373b0d6b94a055bdb3eeb24d46e37f8457028db6"
 DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
-export TMPDIR=$SCRATCHDIR
-
+CHECKPOINTS="/storage/$SERVER_LOCATION/home/$USERNAME/checkpoints/subwordbert-probwordnoise"
 ########################################################################################################################
 echo "Task started at $(date)"
+export TMPDIR=$SCRATCHDIR
 
 
 test -n "$SCRATCHDIR" || { echo >&2 "SCRATCHDIR is not set!"; exit 1; }
@@ -33,8 +32,8 @@ mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/env.yaml || { echo >&2 
 source activate "$SCRATCHDIR/tmp_env" || { echo >&2 "Failed to activate Conda environment"; exit 1; }
 echo "Environment created at $(date)"
 
-mkdir -p "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints" || { echo >&2 "Failed to create checkpoints directory"; exit 1; }
-cp -r "$DATADIR/checkpoints/subwordbert-probwordnoise" "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints" || { echo >&2 "Failed to copy checkpoint"; exit 1; }
+mkdir -p "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints/subwordbert-probwordnoise" || { echo >&2 "Failed to create checkpoints directory"; exit 1; }
+cp -r "$CHECKPOINTS" "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints" || { echo >&2 "Failed to copy checkpoint"; exit 1; }
 
 wandb login $WANDB_API_KEY || { echo >&2 "Failed to log into wandb"; exit 1; }
 
