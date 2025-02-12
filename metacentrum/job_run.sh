@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N BERT_CHECKER
-#PBS -l walltime=10:00:00
-#PBS -l select=1:ncpus=1:ngpus=1:gpu_mem=39gb:mem=100gb:scratch_local=100gb
+#PBS -l walltime=20:00:00
+#PBS -l select=1:ncpus=1:ngpus=1:gpu_mem=15gb:mem=100gb:scratch_local=100gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
 
@@ -10,6 +10,7 @@
 PROJECT_NAME="typos-correction"
 SERVER_LOCATION="praha1"
 USERNAME="eliasma7"
+WANDB_API_KEY="373b0d6b94a055bdb3eeb24d46e37f8457028db6"
 DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
 export TMPDIR=$SCRATCHDIR
 
@@ -35,19 +36,20 @@ echo "Environment created at $(date)"
 mkdir -p "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints" || { echo >&2 "Failed to create checkpoints directory"; exit 1; }
 cp -r "$DATADIR/checkpoints/subwordbert-probwordnoise" "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints" || { echo >&2 "Failed to copy checkpoint"; exit 1; }
 
+wandb login $WANDB_API_KEY || { echo >&2 "Failed to log into wandb"; exit 1; }
+
+echo "Logged in wandb at $(date)"
+
 echo "Starting model execution at $(date)"
 python test.py || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/results_$(date +'%d_%m_%Y').txt"
+cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/results_$(date + '%Y_%m_%d_%H').txt"
 
 source_file="$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints/finetuned_model"
 if [ -e "$source_file" ]; then
-  cp -r "$source_file" "$DATADIR/models_$(date)"
+  cp -r "$source_file" "$DATADIR/models_$(date + '%Y_%m_%d_%H')"
 else
   echo "Source file does not exist."
 fi
-
-
-
 
 echo "Task finished at $(date)"
