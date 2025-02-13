@@ -6,7 +6,7 @@ import wandb
 from neuspell import BertChecker
 
 gpu_name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
-wandb.init(project="test", name="bert-checker",
+wandb.init(project="neuspell", name="bert-checker", resume="allow",
            config={
                'GPU': gpu_name,
            })
@@ -15,12 +15,13 @@ print(f"Running on: {gpu_name}")
 DATA_PATH = "./data/"
 CHECKPOINT = "checkpoints/subwordbert-probwordnoise/finetuned_model"
 
-current_epoch = 5  # epoch to be trained next
-train_epochs = 2  # how many epoch s to train
-# clean_data = "test_clean.txt"
-# corrupt_data = "test_corrupt.txt"
-clean_data = "actual_testing_small.txt"
-corrupt_data = "actual_testing_small_second.txt"
+current_epoch = 1  # epoch to be trained next
+train_epochs = 5  # how many epoch s to train
+# TODO make this into arguments
+clean_data = "test_clean.txt"
+corrupt_data = "test_corrupt.txt"
+# clean_data = "actual_testing_small.txt"
+# corrupt_data = "actual_testing_small_second.txt"
 
 checker = BertChecker(device="cuda")
 

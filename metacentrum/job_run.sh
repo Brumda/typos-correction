@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N BERT_CHECKER
 #PBS -l walltime=20:0:0
-#PBS -l select=1:ncpus=1:ngpus=1:gpu_mem=15gb:mem=100gb:scratch_local=100gb:cluster=adan
+#PBS -l select=1:ncpus=1:ngpus=1:gpu_mem=39gb:mem=100gb:scratch_local=100gb
 #PBS -m abe
 #PBS -j oe
 
@@ -12,6 +12,10 @@ USERNAME="eliasma7"
 WANDB_API_KEY="373b0d6b94a055bdb3eeb24d46e37f8457028db6"
 DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
 CHECKPOINTS="/storage/$SERVER_LOCATION/home/$USERNAME/checkpoints/subwordbert-probwordnoise"
+# testing:
+# cp -r "/storage/praha1/home/eliasma7/typos-correction" "$SCRATCHDIR"
+# cp -r "/storage/praha1/home/eliasma7/checkpoints/subwordbert-probwordnoise" "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints"
+# wandb login 373b0d6b94a055bdb3eeb24d46e37f8457028db6
 ########################################################################################################################
 echo "Task started at $(date)"
 export TMPDIR=$SCRATCHDIR
