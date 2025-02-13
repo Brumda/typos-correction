@@ -14,7 +14,7 @@ wandb.init(project="test", name="bert-checker",
 print(f"Running on: {gpu_name}")
 
 DATA_PATH = "./data/"
-CHECKPOINT = os.path.join(DEFAULT_DATA_PATH, "/checkpoints/subwordbert-probwordnoise/finetuned_model/")
+CHECKPOINT = "/checkpoints/subwordbert-probwordnoise/finetuned_model/"
 checker = BertChecker(device="cuda")
 checker.from_pretrained()
 checker.model.to("cuda")
