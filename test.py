@@ -4,7 +4,6 @@ import torch
 import wandb
 
 from neuspell import BertChecker
-from neuspell.commons import DEFAULT_DATA_PATH
 
 gpu_name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
 wandb.init(project="test", name="bert-checker",
@@ -14,7 +13,7 @@ wandb.init(project="test", name="bert-checker",
 print(f"Running on: {gpu_name}")
 
 DATA_PATH = "./data/"
-CHECKPOINT = "/checkpoints/subwordbert-probwordnoise/finetuned_model/"
+CHECKPOINT = "checkpoints/subwordbert-probwordnoise/finetuned_model"
 checker = BertChecker(device="cuda")
 checker.from_pretrained()
 checker.model.to("cuda")
