@@ -46,11 +46,11 @@ echo "Logged in wandb at $(date)"
 echo "Starting model execution at $(date)"
 python test.py || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/results_$(date + '%Y_%m_%d_%H').txt"
+cp "$SCRATCHDIR/$PROJECT_NAME/result.txt" "$DATADIR/results_$(date '+%Y_%m_%d_%H').txt"
 
-source_file="$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints/finetuned_model"
+source_file="$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints/subwordbert-probwordnoise/finetuned_model"
 if [ -e "$source_file" ]; then
-  cp -r "$source_file" "$DATADIR/models_$(date + '%Y_%m_%d_%H')"
+  cp -r "$source_file" "$DATADIR/models_$(date '+%Y_%m_%d_%H')"
 else
   echo "Source file does not exist."
 fi
