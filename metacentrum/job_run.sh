@@ -14,8 +14,13 @@ DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
 CHECKPOINTS="/storage/$SERVER_LOCATION/home/$USERNAME/checkpoints/elmoscrnn-probwordnoise"
 # testing:
 # cp -r "/storage/praha1/home/eliasma7/typos-correction" "$SCRATCHDIR"
-# cp -r "/storage/praha1/home/eliasma7/checkpoints/subwordbert-probwordnoise" "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints"
+# cp -r "/storage/praha1/home/eliasma7/checkpoints/subwordbert-probwordnoise" "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints"
+# cp -r "/storage/praha1/home/eliasma7/checkpoints/elmoscrnn-probwordnoise
 # wandb login 373b0d6b94a055bdb3eeb24d46e37f8457028db6
+
+
+# export PS1="../\W \$ "
+# conda config --set changeps1 False
 ########################################################################################################################
 echo "Task started at $(date)"
 export TMPDIR=$SCRATCHDIR
@@ -36,8 +41,10 @@ mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/env.yaml || { echo >&2 
 source activate "$SCRATCHDIR/tmp_env" || { echo >&2 "Failed to activate Conda environment"; exit 1; }
 echo "Environment created at $(date)"
 
-mkdir -p "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints/elmoscrnn-probwordnoise" || { echo >&2 "Failed to create checkpoints directory"; exit 1; }
-cp -r "$CHECKPOINTS" "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints" || { echo >&2 "Failed to copy checkpoint"; exit 1; }
+PYTHON_VERSION=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+
+mkdir -p "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints/elmoscrnn-probwordnoise" || { echo >&2 "Failed to create checkpoints directory"; exit 1; }
+cp -r "$CHECKPOINTS" "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints" || { echo >&2 "Failed to copy checkpoint"; exit 1; }
 
 wandb login $WANDB_API_KEY || { echo >&2 "Failed to log into wandb"; exit 1; }
 
@@ -46,11 +53,11 @@ echo "Logged in wandb at $(date)"
 echo "Starting model execution at $(date)"
 python test.py || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/result2.txt" "$DATADIR/results_elmo_$(date '+%Y_%m_%d_%H').txt"
+cp "$SCRATCHDIR/$PROJECT_NAME/result2.txt" "$DATADIR/../results_elmo_$(date '+%Y_%m_%d_%H').txt"
 
-source_file="$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints/elmoscrnn-probwordnoise/finetuned_model"
+source_file="$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints/elmoscrnn-probwordnoise/finetuned_model"
 if [ -e "$source_file" ]; then
-  cp -r "$source_file" "$DATADIR/models_$(date '+%Y_%m_%d_%H')"
+  cp -r "$source_file" "$DATADIR/../models_elmo_$(date '+%Y_%m_%d_%H')"
 else
   echo "Source file does not exist."
 fi
