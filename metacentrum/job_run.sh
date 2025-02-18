@@ -14,7 +14,7 @@ DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
 CHECKPOINTS="/storage/$SERVER_LOCATION/home/$USERNAME/checkpoints/elmoscrnn-probwordnoise"
 # testing:
 # cp -r "/storage/praha1/home/eliasma7/typos-correction" "$SCRATCHDIR"
-# cp -r "/storage/praha1/home/eliasma7/checkpoints/subwordbert-probwordnoise" "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints"
+# cp -r "/storage/praha1/home/eliasma7/checkpoints/elmoscrnn-probwordnoise" "$SCRATCHDIR/tmp_env/lib/python3.9/site-packages/neuspell_data/checkpoints"
 # cp -r "/storage/praha1/home/eliasma7/checkpoints/elmoscrnn-probwordnoise
 # wandb login 373b0d6b94a055bdb3eeb24d46e37f8457028db6
 
@@ -39,6 +39,7 @@ module load mambaforge
 echo "Creating conda environment at $(date)"
 mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/env.yaml || { echo >&2 "Failed to create Conda environment"; exit 1; }
 source activate "$SCRATCHDIR/tmp_env" || { echo >&2 "Failed to activate Conda environment"; exit 1; }
+python -m spacy download en_core_web_sm
 echo "Environment created at $(date)"
 
 PYTHON_VERSION=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
@@ -49,7 +50,6 @@ cp -r "$CHECKPOINTS" "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-package
 wandb login $WANDB_API_KEY || { echo >&2 "Failed to log into wandb"; exit 1; }
 
 echo "Logged in wandb at $(date)"
-
 echo "Starting model execution at $(date)"
 python test.py || { echo >&2 "Python script failed"; exit 1; }
 

@@ -42,13 +42,14 @@ else:
 checker.model.to("cuda")
 
 if current_epoch <= 1:
-    res, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, clean_data),
+    result, prints, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, clean_data),
                                 corrupt_file=os.path.join(DATA_PATH, corrupt_data))
 
     wandb.log({"test_accuracy": acc})
     with open("result2.txt", "a") as f:
         f.write(f"Evaluation of pretrained ELMO model:\n")
-        f.write(f"Result:\n{res}\n")
+        f.write(f"Result:\n{result}\n")
+        f.write(f"prints:\n{prints}\n")
         f.write(20 * "#" + "\n")
 
 for epoch in range(current_epoch, train_epochs + current_epoch):
@@ -60,13 +61,14 @@ for epoch in range(current_epoch, train_epochs + current_epoch):
 
     checker.from_pretrained(os.path.join(CHECKPOINT, f'epoch_{epoch:02d}'))
 
-    res, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, clean_data),
+    result, prints, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, clean_data),
                                 corrupt_file=os.path.join(DATA_PATH, corrupt_data))
 
     wandb.log({"test_accuracy": acc})
     with open("result2.txt", "a") as f:
         f.write(f"Evaluation of ELMO model after {epoch} epochs:\n")
-        f.write(f"Result:\n{res}\n")
+        f.write(f"Result:\n{result}\n")
+        f.write(f"prints:\n{prints}\n")
         f.write(20 * "#" + "\n")
 
 wandb.finish()
