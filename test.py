@@ -13,7 +13,8 @@ wandb.init(project="neuspell", name="elmo-checker", resume="allow",
            })
 print(f"Running on: {gpu_name}")
 
-# TODO arguments
+# TODO make this into arguments
+##############################################################################
 DATA_PATH = "./data/"
 pick_model = 1
 MODEL = {0:"subwordbert-probwordnoise",
@@ -23,14 +24,13 @@ CHECKPOINT = f"checkpoints/{MODEL[pick_model]}/finetuned_model"
 
 current_epoch = 1  # epoch to be trained next
 train_epochs = 8  # how many epochs to train
-# TODO make this into arguments
 train_clean_data = "train_clean.txt"
 train_corrupt_data = "train_corrupt.txt"
 test_clean_data = "test_clean.txt"
 test_corrupt_data = "test_corrupt.txt"
 clean_data = "actual_testing_small.txt"
 corrupt_data = "actual_testing_small_second.txt"
-
+##############################################################################
 CHECKERS = [BertChecker(device="cuda"), ElmosclstmChecker(device="cuda")]
 checker = CHECKERS[pick_model]
 
