@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N ELMO_CHECKER
 #PBS -l walltime=20:0:0
-#PBS -l select=1:ncpus=1:ngpus=1:gpu_mem=44gb:mem=100gb:scratch_local=100gb
+#PBS -l select=1:ncpus=1:ngpus=1:mem=100gb:scratch_local=100gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
 
