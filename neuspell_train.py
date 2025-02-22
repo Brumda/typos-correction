@@ -2,48 +2,50 @@ import os
 import time
 import torch
 import wandb
+import argparse
 
 from neuspell import ElmosclstmChecker, BertChecker
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", type=str, default="bert", help="Which model to use")
+parser.add_argument("--program_test", default=False, type=bool, help="Test the program on small data")
+parser.add_argument("--current_epoch", default=1, type=int, help="Epoch to be trained next")
+parser.add_argument("--train_epochs", default=5, type=int, help="How many epochs to train")
+
+args = parser.parse_args()
 
 gpu_name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
 print(f"Running on: {gpu_name}")
 
 ##############################################################################
-pick_model = 1 # TODO make into argument
-MODEL = {0: "subwordbert-probwordnoise",
-         1: "elmoscrnn-probwordnoise", }
+MODEL = {"bert": {"model_name": "subwordbert-probwordnoise",
+                  "wandb_run_name": "bert-checker",
+                  "model": BertChecker(device="cuda"), },
+         "elmo": {"model_name": "elmoscrnn-probwordnoise",
+                  "wandb_run_name": "elmo-checker",
+                  "model": ElmosclstmChecker(device="cuda")}, }
 
-NAME = {0: "bert-checker",
-        1: "elmo-checker", }
+_DATA = {"run":
+             {"train": ["train_clean.txt", "train_corrupt.txt"],
+              "test": ["test_clean.txt", "test_corrupt.txt"]},
+         "test":
+             {"train": ["actual_testing_small.txt", "actual_testing_small_second.txt"],
+              "test": ["actual_testing_small.txt", "actual_testing_small_second.txt"]}}
 
+DATA = _DATA["test" if args.program_test else "run"]  # pick between training and program testing
+##############################################################################
 DATA_PATH = "./data/"
-CHECKPOINT = f"checkpoints/{MODEL[pick_model]}/finetuned_model"
-wandb.init(project="neuspell", name=NAME[pick_model], resume="allow",
+CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
+wandb.init(project="neuspell", name=MODEL[args.model]["wandb_run_name"], resume="allow",
            config={
                'GPU': gpu_name, })
 ##############################################################################
-current_epoch = 1  # epoch to be trained next
-train_epochs = 8  # how many epochs to train
-_DATA = {"run":
-            {"train": ["train_clean.txt", "train_corrupt.txt"],
-             "test": ["test_clean.txt", "test_corrupt.txt"]},
-        "test":
-            {"train": ["actual_testing_small.txt", "actual_testing_small_second.txt"],
-             "test": ["actual_testing_small.txt", "actual_testing_small_second.txt"]}}
-# TODO make into argument
-DATA = _DATA["run"] # pick between training and program testing
-##############################################################################
-CHECKERS = [BertChecker(device="cuda"), ElmosclstmChecker(device="cuda")]
-checker = CHECKERS[pick_model]
+checker = MODEL[args.model]["model"]
 
-if current_epoch > 1:
-    checker.from_pretrained(os.path.join(CHECKPOINT, f'epoch_{current_epoch - 1:02d}'))  # load previous epoch
+if args.current_epoch > 1:
+    checker.from_pretrained(os.path.join(CHECKPOINT, f'epoch_{args.current_epoch - 1:02d}'))  # load previous epoch
 else:
     checker.from_pretrained()
-
-checker.model.to("cuda")
-
-if current_epoch <= 1:
     _, prints, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, DATA["test"][0]),
                                       corrupt_file=os.path.join(DATA_PATH, DATA["test"][1]))
 
@@ -53,7 +55,9 @@ if current_epoch <= 1:
         f.write(f"Result:\n{prints}\n")
         f.write(20 * "#" + "\n")
 
-for epoch in range(current_epoch, train_epochs + current_epoch):
+# checker.model.to("cuda")
+
+for epoch in range(args.current_epoch, args.train_epochs + args.current_epoch):
     start_time = time.time()
     checker.finetune(clean_file=os.path.join(DATA_PATH, DATA["train"][0]),
                      corrupt_file=os.path.join(DATA_PATH, DATA["train"][1]),

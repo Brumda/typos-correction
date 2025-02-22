@@ -48,7 +48,7 @@ wandb login $WANDB_API_KEY || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
 echo "Starting model execution at $(date)"
-python neuspell_train.py || { echo >&2 "Python script failed"; exit 1; }
+python neuspell_train.py --model="elmo" || { echo >&2 "Python script failed"; exit 1; }
 
 cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/../results_elmo_$(date '+%Y_%m_%d_%H').txt"
 
