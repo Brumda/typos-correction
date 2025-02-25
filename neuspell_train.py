@@ -29,8 +29,8 @@ _DATA = {"run":
              {"train": ["train_clean.txt", "train_corrupt.txt"],
               "test": ["test_clean.txt", "test_corrupt.txt"]},
          "test":
-             {"train": ["actual_testing_small.txt", "actual_testing_small_second.txt"],
-              "test": ["actual_testing_small.txt", "actual_testing_small_second.txt"]}}
+             {"train": ["small_clean.txt", "small_corrupt.txt"],
+              "test": ["small_clean.txt", "small_corrupt.txt"]}}
 
 DATA = _DATA["test" if args.program_test else "run"]  # pick between training and program testing
 ##############################################################################
