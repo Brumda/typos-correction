@@ -1,10 +1,12 @@
+import argparse
 import os
 import time
-import torch
-import wandb
-import argparse
 
+import torch
 from neuspell import ElmosclstmChecker, BertChecker
+
+import wandb
+from helpers import DATA_PATH
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="bert", help="Which model to use")
@@ -34,11 +36,9 @@ _DATA = {"run":
 
 DATA = _DATA["test" if args.program_test else "run"]  # pick between training and program testing
 ##############################################################################
-DATA_PATH = "./data/"
 CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
 wandb.init(project="neuspell", name=MODEL[args.model]["wandb_run_name"], resume="allow",
-           config={
-               'GPU': gpu_name, })
+           config={'GPU': gpu_name, })
 ##############################################################################
 checker = MODEL[args.model]["model"]
 
@@ -54,8 +54,6 @@ else:
         f.write(f"Evaluation of pretrained ELMO model:\n")
         f.write(f"Result:\n{prints}\n")
         f.write(20 * "#" + "\n")
-
-# checker.model.to("cuda")
 
 for epoch in range(args.current_epoch, args.train_epochs + args.current_epoch):
     start_time = time.time()
