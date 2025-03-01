@@ -11,7 +11,6 @@ SERVER_LOCATION="praha1"
 USERNAME="eliasma7"
 WANDB_API_KEY="373b0d6b94a055bdb3eeb24d46e37f8457028db6"
 DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
-CHECKPOINTS="/storage/$SERVER_LOCATION/home/$USERNAME/checkpoints/subwordbert-probwordnoise"
 ########################################################################################################################
 set -e
 # Ensure clean_scratch runs on exit, even on error
@@ -26,15 +25,11 @@ export TMPDIR=$SCRATCHDIR
 
 test -n "$SCRATCHDIR" || { echo >&2 "SCRATCHDIR is not set!"; exit 1; }
 
-# get swig
-export PATH=/storage/praha1/home/eliasma7/extract_dir/usr/bin/:$PATH
-
 echo "Copying data to $SCRATCHDIR at $(date)"
 cp -r "$DATADIR" "$SCRATCHDIR" || { echo >&2 "Error copying data to scratch"; exit 1; }
 echo "Data copied at $(date)"
 
 cd "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Failed to enter scratch directory"; exit 1; }
-
 
 module load mambaforge
 
@@ -45,6 +40,13 @@ echo "Environment created at $(date)"
 
 wandb login $WANDB_API_KEY || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
+
+# get swig
+export PATH=/storage/praha1/home/eliasma7/extract_dir/usr/bin/:$PATH
+export SWIG_LIB=/storage/praha1/home/eliasma7/extract_dir/usr/share/swig3.0
+
+wget https://github.com/bakwc/JamSpell-models/raw/master/en.tar.gz || { echo >&2 "Failed to get model"; exit 1; }
+tar -xf en.tar.gz || { echo >&2 "Failed to extract model"; exit 1; }
 
 echo "Starting model benchmarking at $(date)"
 python jamspell_benchmark.py || { echo >&2 "Python script failed"; exit 1; }

@@ -6,7 +6,12 @@ from dataclasses import dataclass
 from typing import Callable, Any
 
 import numpy as np
-import torch
+
+# this way I don't need to install torch with non torch models
+try:
+    import torch
+except ImportError:
+    pass
 
 
 # from tqdm import tqdm

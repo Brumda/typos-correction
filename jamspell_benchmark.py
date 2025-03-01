@@ -3,7 +3,7 @@ from benchmark import ModelBenchmark
 from helpers import get_data_from_file
 import jamspell
 
-wandb.init(project="test_Benchmarks", name="jamspell", resume="allow", id="jamspell",
+wandb.init(project="Benchmarks", name="jamspell", resume="allow", id="jamspell",
            config={'GPU': 'CPU'})
 
 corrector = jamspell.TSpellCorrector()
@@ -11,7 +11,7 @@ corrector.LoadLangModel('en.bin')
 
 benchmark = ModelBenchmark(device='cpu')
 
-clean, corrupt = get_data_from_file('small')
+clean, corrupt = get_data_from_file('test')
 warm_up_runs = 2
 num_runs = 5
 res = benchmark.benchmark_model(corrector,
