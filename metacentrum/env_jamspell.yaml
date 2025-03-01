@@ -4,4 +4,6 @@ channels:
   - defaults
 dependencies:
   - wandb
-  - jamspell
+  - pip
+  - pip:
+      - jamspell
