@@ -50,9 +50,9 @@ echo "Logged in wandb at $(date)"
 echo "Starting model execution at $(date)"
 python neuspell_train.py --model="elmo" || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/../results_elmo_$(date '+%Y_%m_%d_%H').txt"
+cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/../elmo_results_$(date '+%Y_%m_%d_%H').txt"
 
 source_file="$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints/elmoscrnn-probwordnoise/finetuned_model"
-cp -r "$source_file" "$DATADIR/models_elmo_$(date '+%Y_%m_%d_%H')" || { echo >&2 "Source file does not exist."; exit 1; }
+cp -r "$source_file" "$DATADIR/elmo_models_$(date '+%Y_%m_%d_%H')" || { echo >&2 "Source file does not exist."; exit 1; }
 
 echo "Task finished at $(date)"
