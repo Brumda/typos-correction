@@ -137,6 +137,7 @@ class ModelBenchmark:
                     inference_time += time.time() - start_time
 
                     # statistics
+                    acc_sen += prediction == clean
                     for corrupt_token, clean_token, predict_token in zip(corrupt.split(), clean.split(),
                                                                          prediction.split()):
                         if corrupt_token == clean_token and predict_token == clean_token:
@@ -148,7 +149,6 @@ class ModelBenchmark:
                         elif corrupt_token != clean_token and predict_token != clean_token:
                             incorr2incorr += 1
 
-                        acc_sen += prediction == clean
 
                 total_tokens = corr2corr + corr2incorr + incorr2corr + incorr2incorr
                 token_correction.append((corr2corr, corr2incorr, incorr2corr, incorr2incorr))
