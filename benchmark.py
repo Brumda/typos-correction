@@ -32,21 +32,21 @@ class BenchmarkResult:
 
     def __str__(self):
         return (f"Benchmark results:\n"
-                f"\tModel: {self.model_name}\n"
-                f"\tSize: {self.model_size} MB\n"
-                f"\tInference Time: {self.inference_time} s\n"
-                f"\tPeak Memory: {self.peak_memory_mb} MB\n"
-                f"\tGPU Memory: {self.gpu_memory_mb} MB\n"
-                f"\tThroughput: {self.throughput_tokens} tokens/sec\n"
-                f"\tThroughput: {self.throughput_sentences} sentences/sec\n"
-                f"\tAccuracy tokens: {self.accuracy_tokens:.3%}\n"
-                f"\tAccuracy sentences: {self.accuracy_sentences:.3%}\n"
-                f"\tCorrect → Correct: {self.corr2corr}\n"
-                f"\tCorrect → Incorrect: {self.corr2incorr}\n"
-                f"\tIncorrect → Correct: {self.incorr2corr}\n"
-                f"\tIncorrect → Incorrect: {self.incorr2incorr}\n"
-                f"\tWord Correction Rate: {self.word_correction_rate:.3%}\n"
-                f"\tWord Incorrection Rate: {self.word_incorrection_rate:.3%}")
+                f"   Model: {self.model_name}\n"
+                f"   Size: {self.model_size:.2f} MB\n"
+                f"   Inference Time: {self.inference_time:.2f} s\n"
+                f"   Peak Memory: {self.peak_memory_mb:.2f} MB\n"
+                f"   GPU Memory: {self.gpu_memory_mb:.2f} MB\n"
+                f"   Throughput: {self.throughput_tokens:.2f} tokens/sec\n"
+                f"   Throughput: {self.throughput_sentences:.2f} sentences/sec\n"
+                f"   Accuracy tokens: {self.accuracy_tokens:.2%}\n"
+                f"   Accuracy sentences: {self.accuracy_sentences:.2%}\n"
+                f"   Correct → Correct: {self.corr2corr}\n"
+                f"   Correct → Incorrect: {self.corr2incorr}\n"
+                f"   Incorrect → Correct: {self.incorr2corr}\n"
+                f"   Incorrect → Incorrect: {self.incorr2incorr}\n"
+                f"   Word Correction Rate: {self.word_correction_rate:.2%}\n"
+                f"   Word Incorrection Rate: {self.word_incorrection_rate:.2%}\n")
 
     def __repr__(self):
         return self.__str__()
