@@ -33,8 +33,8 @@ class BenchmarkResult:
     corr2incorr: float
     incorr2corr: float
     incorr2incorr: float
-    word_correction_rate: float
-    word_incorrection_rate: float  # for lack of a better name
+    token_correction_rate: float
+    token_incorrection_rate: float  # for lack of a better name
 
     def __str__(self):
         return (f"Benchmark results:\n"
@@ -52,8 +52,8 @@ class BenchmarkResult:
                 f"   Correct → Incorrect: {self.corr2incorr}\n"
                 f"   Incorrect → Correct: {self.incorr2corr}\n"
                 f"   Incorrect → Incorrect: {self.incorr2incorr}\n"
-                f"   Word Correction Rate: {self.word_correction_rate:.2%}\n"
-                f"   Word Incorrection Rate: {self.word_incorrection_rate:.2%}\n")
+                f"   Token Correction Rate: {self.token_correction_rate:.2%}\n"
+                f"   Token Incorrection Rate: {self.token_incorrection_rate:.2%}\n")
 
     def __repr__(self):
         return self.__str__()
@@ -120,8 +120,8 @@ class ModelBenchmark:
         accuracies_tokens = []
         accuracies_sentences = []
         token_correction = []
-        word_correction_rates = []
-        word_incorrection_rates = []
+        token_correction_rates = []
+        token_incorrection_rates = []
         ms_per_sentences = []
 
         if self.prints: print(f"Starting benchmark iterations...")
@@ -155,8 +155,8 @@ class ModelBenchmark:
                 total_tokens = corr2corr + corr2incorr + incorr2corr + incorr2incorr
                 token_correction.append((corr2corr, corr2incorr, incorr2corr, incorr2incorr))
                 accuracies_tokens.append((corr2corr + incorr2corr) / total_tokens)
-                word_correction_rates.append(incorr2corr / (incorr2corr + incorr2incorr))
-                word_incorrection_rates.append(corr2incorr / (corr2incorr + corr2corr))
+                token_correction_rates.append(incorr2corr / (incorr2corr + incorr2incorr))
+                token_incorrection_rates.append(corr2incorr / (corr2incorr + corr2corr))
 
                 accuracies_sentences.append(acc_sen / len(clean_texts))
 
@@ -178,8 +178,8 @@ class ModelBenchmark:
         avg_memory = np.mean(memory_usages)
         avg_gpu_memory = np.mean(gpu_memory_usages)
         avg_token_correction = np.mean(token_correction, axis=0)
-        avg_word_correction_rate = np.mean(word_correction_rates)
-        avg_word_incorrection_rate = np.mean(word_incorrection_rates)
+        avg_token_correction_rate = np.mean(token_correction_rates)
+        avg_token_incorrection_rate = np.mean(token_incorrection_rates)
         avg_ms_per_sentence = np.mean(ms_per_sentences)
 
         return BenchmarkResult(model_name=model_name,
@@ -196,5 +196,5 @@ class ModelBenchmark:
                                corr2incorr=avg_token_correction[1],
                                incorr2corr=avg_token_correction[2],
                                incorr2incorr=avg_token_correction[3],
-                               word_correction_rate=avg_word_correction_rate,
-                               word_incorrection_rate=avg_word_incorrection_rate)
+                               token_correction_rate=avg_token_correction_rate,
+                               token_incorrection_rate=avg_token_incorrection_rate)
