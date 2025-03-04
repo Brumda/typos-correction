@@ -26,6 +26,7 @@ class BenchmarkResult:
     gpu_memory_mb: float
     throughput_sentences: float
     throughput_tokens: float
+    ms_per_sentence: float
     accuracy_tokens: float
     accuracy_sentences: float
     corr2corr: float
@@ -44,6 +45,7 @@ class BenchmarkResult:
                 f"   GPU Memory: {self.gpu_memory_mb:.2f} MB\n"
                 f"   Throughput: {self.throughput_tokens:.2f} tokens/sec\n"
                 f"   Throughput: {self.throughput_sentences:.2f} sentences/sec\n"
+                f"   Throughput: {self.ms_per_sentence:.2f} ms/sentence\n"
                 f"   Accuracy tokens: {self.accuracy_tokens:.2%}\n"
                 f"   Accuracy sentences: {self.accuracy_sentences:.2%}\n"
                 f"   Correct → Correct: {self.corr2corr}\n"
@@ -120,6 +122,7 @@ class ModelBenchmark:
         token_correction = []
         word_correction_rates = []
         word_incorrection_rates = []
+        ms_per_sentences = []
 
         if self.prints: print(f"Starting benchmark iterations...")
         # for run in tqdm(range(num_runs)):
@@ -149,7 +152,6 @@ class ModelBenchmark:
                         elif corrupt_token != clean_token and predict_token != clean_token:
                             incorr2incorr += 1
 
-
                 total_tokens = corr2corr + corr2incorr + incorr2corr + incorr2incorr
                 token_correction.append((corr2corr, corr2incorr, incorr2corr, incorr2incorr))
                 accuracies_tokens.append((corr2corr + incorr2corr) / total_tokens)
@@ -160,6 +162,7 @@ class ModelBenchmark:
 
                 throughputs_tokens.append(total_tokens / inference_time)
                 throughputs_sentences.append(len(corrupt_texts) / inference_time)
+                ms_per_sentences.append((inference_time / len(clean_texts)) * 1000)
 
                 inference_times.append(inference_time)
                 memory_usages.append(self.peak_memory)
@@ -177,6 +180,7 @@ class ModelBenchmark:
         avg_token_correction = np.mean(token_correction, axis=0)
         avg_word_correction_rate = np.mean(word_correction_rates)
         avg_word_incorrection_rate = np.mean(word_incorrection_rates)
+        avg_ms_per_sentence = np.mean(ms_per_sentences)
 
         return BenchmarkResult(model_name=model_name,
                                model_size=self._get_model_size(model),
@@ -185,6 +189,7 @@ class ModelBenchmark:
                                gpu_memory_mb=avg_gpu_memory,
                                throughput_tokens=avg_throughput_tok,
                                throughput_sentences=avg_throughput_sen,
+                               ms_per_sentence=avg_ms_per_sentence,
                                accuracy_tokens=avg_accuracy_tok,
                                accuracy_sentences=avg_accuracy_sen,
                                corr2corr=avg_token_correction[0],
