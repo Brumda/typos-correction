@@ -7,6 +7,8 @@ from typing import Callable, Any
 
 import numpy as np
 
+from helpers import tilde_format
+
 # this way I don't need to install torch with non torch models
 try:
     import torch
@@ -43,11 +45,11 @@ class BenchmarkResult:
                 f"   Inference Time: {self.inference_time:.2f} s\n"
                 f"   Peak Memory: {self.peak_memory_mb:.2f} MB\n"
                 f"   GPU Memory: {self.gpu_memory_mb:.2f} MB\n"
-                f"   Throughput: {self.throughput_tokens:.2f} tokens/sec\n"
                 f"   Throughput: {self.throughput_sentences:.2f} sentences/sec\n"
                 f"   Throughput: {self.ms_per_sentence:.2f} ms/sentence\n"
-                f"   Accuracy tokens: {self.accuracy_tokens:.2%}\n"
+                f"   Throughput: {self.throughput_tokens:.2f} tokens/sec\n"
                 f"   Accuracy sentences: {self.accuracy_sentences:.2%}\n"
+                f"   Accuracy tokens: {self.accuracy_tokens:.2%}\n"
                 f"   Correct → Correct: {self.corr2corr}\n"
                 f"   Correct → Incorrect: {self.corr2incorr}\n"
                 f"   Incorrect → Correct: {self.incorr2corr}\n"
@@ -57,6 +59,52 @@ class BenchmarkResult:
 
     def __repr__(self):
         return self.__str__()
+
+    def create_tex_table_perf_metrics(self):
+        return f"""
+        \\begin{{table}}[h]
+           \centering
+           \\begin{{tabular}}{{@{{}}lr@{{}}}}
+                \\toprule
+                \\multicolumn{{2}}{{c}}{{Model statistics}} \\\\
+                \\midrule
+                Model size & {self.model_size:.2f} MB \\\\
+                Peak Memory & {self.peak_memory_mb:.2f} MB \\\\
+                GPU Memory & {self.gpu_memory_mb:.2f} MB \\\\
+                \\midrule
+                Total Inference Time & {self.inference_time:.2f} s \\\\
+                Throughput (sentences/sec) & {self.throughput_sentences:.2f} \\\\
+                Throughput (ms/sentence) & {self.ms_per_sentence:.2f} \\\\
+                Throughput (tokens/sec) & {self.throughput_tokens:.2f} \\\\
+                \\bottomrule
+            \\end{{tabular}}
+            \\caption{{Performance metrics for the {self.model_name} model.}}
+            \\label{{tab:{self.model_name}_metrics}}
+        \\end{{table}}"""
+
+    def create_tex_table_corr_metrics(self):
+        return f"""
+        \\begin{{table}}[h]
+           \centering
+           \\begin{{tabular}}{{@{{}}lr@{{}}}}
+                \\toprule
+                \\multicolumn{{2}}{{c}}{{Token corrections}} \\\\
+                \\midrule
+                Accuracy (sentences) & {self.accuracy_sentences:.2%} \\\\
+                Accuracy (tokens) & {self.accuracy_tokens:.2%} \\\\
+                \\midrule
+                Correct $\\rightarrow$ Correct & {tilde_format(self.corr2corr)} \\\\
+                Correct $\\rightarrow$ Incorrect & {tilde_format(self.corr2incorr)} \\\\
+                Incorrect $\\rightarrow$ Correct & {tilde_format(self.incorr2corr)} \\\\
+                Incorrect $\\rightarrow$ Incorrect & {tilde_format(self.incorr2incorr)} \\\\
+                \\midrule
+                Token Correction Rate & {self.token_correction_rate:.2f} \\\\
+                Token Incorrection Rate & {self.token_incorrection_rate:.2f} \\\\
+                \\bottomrule
+            \\end{{tabular}}
+            \\caption{{Correction metrics for the {self.model_name} model.}}
+            \\label{{tab:{self.model_name}_metrics}}
+        \\end{{table}}"""
 
 
 class ModelBenchmark:
