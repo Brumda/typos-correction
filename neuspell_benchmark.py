@@ -15,7 +15,7 @@ checker.from_pretrained()
 
 benchmark = ModelBenchmark()
 
-clean, corrupt = get_data_from_file('small')
+corrupt, clean = get_data_from_file('small')
 
 res = benchmark.benchmark_model(checker,
                                 corrupt,
@@ -27,6 +27,8 @@ res = benchmark.benchmark_model(checker,
 wandb.log(res.__dict__)
 with open("benchmark_results.txt", "w", encoding="utf-8") as f:
     f.write("Pretrained BERT benchmark results:\n")
-    f.write(f"{res}")
+    f.write(f"{res}\n")
+    f.write(f"{res.create_tex_table_perf_metrics()}\n")
+    f.write(f"{res.create_tex_table_corr_metrics()}\n")
 
 wandb.finish()

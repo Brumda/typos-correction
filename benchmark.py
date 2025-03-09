@@ -80,7 +80,7 @@ class BenchmarkResult:
             \\end{{tabular}}
             \\caption{{Performance metrics for the {self.model_name} model.}}
             \\label{{tab:{self.model_name}_metrics}}
-        \\end{{table}}"""
+        \\end{{table}}\n"""
 
     def create_tex_table_corr_metrics(self):
         return f"""
@@ -104,7 +104,7 @@ class BenchmarkResult:
             \\end{{tabular}}
             \\caption{{Correction metrics for the {self.model_name} model.}}
             \\label{{tab:{self.model_name}_metrics}}
-        \\end{{table}}"""
+        \\end{{table}}\n"""
 
 
 class ModelBenchmark:

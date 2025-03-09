@@ -1,7 +1,8 @@
+import jamspell
+
 import wandb
 from benchmark import ModelBenchmark
 from helpers import get_data_from_file
-import jamspell
 
 wandb.init(project="Benchmarks", name="jamspell", resume="allow", id="jamspell",
            config={'GPU': 'CPU'})
@@ -11,7 +12,7 @@ corrector.LoadLangModel('en.bin')
 
 benchmark = ModelBenchmark(device='cpu')
 
-clean, corrupt = get_data_from_file('test')
+corrupt, clean = get_data_from_file('test')
 warm_up_runs = 2
 num_runs = 5
 res = benchmark.benchmark_model(corrector,
@@ -24,6 +25,8 @@ res = benchmark.benchmark_model(corrector,
 wandb.log(res.__dict__)
 with open("benchmark_results.txt", "w", encoding="utf-8") as f:
     f.write("Jamspell benchmark results:\n")
-    f.write(f"{res}")
+    f.write(f"{res}\n")
+    f.write(f"{res.create_tex_table_perf_metrics()}\n")
+    f.write(f"{res.create_tex_table_corr_metrics()}\n")
 
 wandb.finish()
