@@ -129391,7 +129391,15 @@ transaction is not advised.
 require(_amountReimbursed <= transaction.amount, "The amount reimbursed has to be less or equal than the transaction.");
 // last successful connection by us
 **NOTE:** We DO NOT recommend installing BANK wallet on jailbroken devices due to substantial security risks. A jailbroken iOS or Android opearting systems can not guarantee the securely of your private keys. This means that some malicious app running on jailbroken device can potentially access the private keys for your funds and steal them.
-An example app to demonstrate forms-angular - a way of creating forms in aAngular / Bootstrap / Express application.There is a demonstration application with several example schemas running athttp://forms-ng.herokuapp.com.Although it is a bit premature for production use (though I am doing it) the"minimal" folder shows how you might go about doing it in the simplest way.  It hasits own README file.
+An example app to demonstrate forms-angular - a way of creating forms in a
+Angular / Bootstrap / Express application.
+
+There is a demonstration application with several example schemas running at
+http://forms-ng.herokuapp.com.
+
+Although it is a bit premature for production use (though I am doing it) the
+"minimal" folder shows how you might go about doing it in the simplest way.  It has
+its own README file.
 Note: strictly speaking, they might be performing an "illegal" edit
 ## Set this to true in order to add the corresponding annotations for cert-manager
 // This is kind of a hack but keeps the definition of types here in

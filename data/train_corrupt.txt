@@ -53848,7 +53848,8 @@ A copy-on-write filesystem maintains many changes of a single file, which is hel
 to build swift. Assuming you followed the instructions exactly, the path
 schemas: [CUSTOM_ELEMENTS_SCHEMA]
 | `loki-external-labels`      | No        | `container_name={{.Name}}` | Additional label value pair separated by `,` to send with logs. The value is expanded with the [Docker tag template format](https://docs.docker.com/engine/admin/logging/log_tags/). (eg: `container_name={{.ID}}.{{.Name}},cluster=prod`)
-_____*This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.*
+_____
+*This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.*
 return TASKSET_MINIMIUM_SHARES
 setAlignmentAttribute(c,'wrapText',1});
 When dealing with embedded ressources (inferred or explicitly set), the behaviour is slightly different : as resources are fetched asynchronously,
@@ -129391,7 +129392,15 @@ tranaction is not advised.
 require(_amountReimbursed <= transaction.amount, "The37 amount reimbursed has to be less or equal than the transaction.");
 // last succesfull connection by us
 **NOTE:** We DO NOT recommend installing BANK wallet on jailbroken devices due to substantial security risks. A jailbroken iOS or Android opearting systems can not guarantee the securely of your private keys. This means that ome malicious app running on jailbroken device can potentially access the private keys for your funds and steal them.
-An example app to demonstrate forms-angular - a way of creating forms in aAngular / Bootstrap / Express application.There is a demonstration application with several example schemas running athttp://forms-ng.herokuapp.com.Although it is a bit premature for production use (though I am doing it) the"minimal" folder shows how yo might go about doing it in the simplest way.  It hasits own README file.
+An example app to demonstrate forms-angular - a way of creating forms in a
+Angular / Bootstrap / Express application.
+
+There is a demonstration application with several example schemas running at
+http://forms-ng.herokuapp.com.
+
+Although it is a bit premature for production use (though I am doing it) the
+"minimal" folder shows how yo might go about doing it in the simplest way.  It has
+its own README file.
 Note: strictly speaking, they might be performeing an "illegal" edit
 ## Set this to true in order to add the corresponding annontations for cert-manager
 // This is kind of a hack but keeps the definiton of types here in
