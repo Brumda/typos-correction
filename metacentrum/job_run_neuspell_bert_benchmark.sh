@@ -9,7 +9,7 @@
 PROJECT_NAME="typos-correction"
 SERVER_LOCATION="praha1"
 USERNAME="eliasma7"
-WANDB_API_KEY="373b0d6b94a055bdb3eeb24d46e37f8457028db6"
+WANDB_API_KEY=""
 DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
 CHECKPOINTS="/storage/$SERVER_LOCATION/home/$USERNAME/checkpoints/subwordbert-probwordnoise"
 ########################################################################################################################

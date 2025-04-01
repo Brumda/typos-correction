@@ -9,16 +9,23 @@
 PROJECT_NAME="typos-correction"
 SERVER_LOCATION="praha1"
 USERNAME="eliasma7"
-WANDB_API_KEY="373b0d6b94a055bdb3eeb24d46e37f8457028db6"
+WANDB_API_KEY=""
 DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
 CHECKPOINTS="/storage/$SERVER_LOCATION/home/$USERNAME/checkpoints/subwordbert-probwordnoise"
 # testing:
 # cp -r "/storage/praha1/home/eliasma7/typos-correction" "$SCRATCHDIR"
 # cp -r "/storage/praha1/home/eliasma7/checkpoints/subwordbert-probwordnoise" "$SCRATCHDIR/tmp_env/lib/python3.13/site-packages/neuspell_data/checkpoints"
-# wandb login 373b0d6b94a055bdb3eeb24d46e37f8457028db6
 
 # export PS1="../\W \$ "
 ########################################################################################################################
+set -e
+# Ensure clean_scratch runs on exit, even on error
+cleanup() {
+    echo "Running clean_scratch at $(date)"
+    clean_scratch
+}
+trap cleanup EXIT
+
 echo "Task started at $(date)"
 export TMPDIR=$SCRATCHDIR
 
