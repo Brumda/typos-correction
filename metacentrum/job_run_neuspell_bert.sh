@@ -9,7 +9,6 @@
 PROJECT_NAME="typos-correction"
 SERVER_LOCATION="praha1"
 USERNAME="eliasma7"
-WANDB_API_KEY=""
 DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
 CHECKPOINTS="/storage/$SERVER_LOCATION/home/$USERNAME/checkpoints/subwordbert-probwordnoise"
 # testing:
@@ -37,6 +36,7 @@ cp -r "$DATADIR" "$SCRATCHDIR" || { echo >&2 "Error copying data to scratch"; ex
 echo "Data copied at $(date)"
 
 cd "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Failed to enter scratch directory"; exit 1; }
+WANDB_API_KEY=$(cat ../wandb_key)
 
 module load mambaforge
 
