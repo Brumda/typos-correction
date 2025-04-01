@@ -36,7 +36,7 @@ cp -r "$DATADIR" "$SCRATCHDIR" || { echo >&2 "Error copying data to scratch"; ex
 echo "Data copied at $(date)"
 
 cd "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Failed to enter scratch directory"; exit 1; }
-WANDB_API_KEY=$(cat DATADIR/../wandb_key)
+WANDB_API_KEY=$(cat $DATADIR/../wandb_key)
 
 module load mambaforge
 

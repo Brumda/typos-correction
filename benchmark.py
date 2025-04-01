@@ -35,6 +35,9 @@ class BenchmarkResult:
     corr2incorr: float
     incorr2corr: float
     incorr2incorr: float
+    recall: float
+    precision: float
+    f05: float
     token_correction_rate: float
     token_incorrection_rate: float  # for lack of a better name
 
@@ -54,6 +57,9 @@ class BenchmarkResult:
                 f"   Correct → Incorrect: {self.corr2incorr}\n"
                 f"   Incorrect → Correct: {self.incorr2corr}\n"
                 f"   Incorrect → Incorrect: {self.incorr2incorr}\n"
+                f"   Recall: {self.recall:.2%}\n"
+                f"   Precision: {self.precision:.2%}\n"
+                f"   F0.5: {self.f05:.2%}\n"
                 f"   Token Correction Rate: {self.token_correction_rate:.2%}\n"
                 f"   Token Incorrection Rate: {self.token_incorrection_rate:.2%}\n")
 
@@ -68,14 +74,14 @@ class BenchmarkResult:
                 \\toprule
                 \\multicolumn{{2}}{{c}}{{Model statistics}} \\\\
                 \\midrule
-                Model size & {self.model_size:.2f} MB \\\\
-                Peak Memory & {self.peak_memory_mb:.2f} MB \\\\
-                GPU Memory & {self.gpu_memory_mb:.2f} MB \\\\
+                Model size & \\num{{{self.model_size:.2f}}} MB \\\\
+                Peak Memory & \\num{{{self.peak_memory_mb:.2f}}} MB \\\\
+                GPU Memory & \\num{{{self.gpu_memory_mb:.2f}}} MB \\\\
                 \\midrule
-                Total Inference Time & {self.inference_time:.2f} s \\\\
-                Throughput (sentences/sec) & {self.throughput_sentences:.2f} \\\\
-                Throughput (ms/sentence) & {self.ms_per_sentence:.2f} \\\\
-                Throughput (tokens/sec) & {self.throughput_tokens:.2f} \\\\
+                Total Inference Time & \\num{{{self.inference_time:.2f}}} s \\\\
+                Throughput (sentences/sec) & \\num{{{self.throughput_sentences:.2f}}} \\\\
+                Throughput (ms/sentence) & \\num{{{self.ms_per_sentence:.2f}}} \\\\
+                Throughput (tokens/sec) & \\num{{{self.throughput_tokens:.2f}}} \\\\
                 \\bottomrule
             \\end{{tabular}}
             \\caption{{Performance metrics for the {self.model_name} model.}}
@@ -90,16 +96,19 @@ class BenchmarkResult:
                 \\toprule
                 \\multicolumn{{2}}{{c}}{{Token corrections}} \\\\
                 \\midrule
-                Accuracy (sentences) & {self.accuracy_sentences:.2%} \\\\
-                Accuracy (tokens) & {self.accuracy_tokens:.2%} \\\\
+                Accuracy (sentences) & \\num{{{self.accuracy_sentences:.2%}}} \\\\
+                Accuracy (tokens) & \\num{{{self.accuracy_tokens:.2%}}} \\\\
                 \\midrule
-                Correct $\\rightarrow$ Correct & {tilde_format(self.corr2corr)} \\\\
-                Correct $\\rightarrow$ Incorrect & {tilde_format(self.corr2incorr)} \\\\
-                Incorrect $\\rightarrow$ Correct & {tilde_format(self.incorr2corr)} \\\\
-                Incorrect $\\rightarrow$ Incorrect & {tilde_format(self.incorr2incorr)} \\\\
+                Correct $\\rightarrow$ Correct & \\num{{{tilde_format(self.corr2corr)}}} \\\\
+                Correct $\\rightarrow$ Incorrect & \\num{{{tilde_format(self.corr2incorr)}}} \\\\
+                Incorrect $\\rightarrow$ Correct & \\num{{{tilde_format(self.incorr2corr)}}} \\\\
+                Incorrect $\\rightarrow$ Incorrect & \\num{{{tilde_format(self.incorr2incorr)}}} \\\\
                 \\midrule
-                Token Correction Rate & {self.token_correction_rate:.2f} \\\\
-                Token Incorrection Rate & {self.token_incorrection_rate:.2f} \\\\
+                Precision (tokens) & \\num{{{self.precision:.2%}}} \\\\
+                Recall (tokens) & \\num{{{self.recall:.2%}}} \\\\
+                F0.5 (tokens) & \\num{{{self.f05:.2%}}} \\\\
+                Token Correction Rate & \\num{{{self.token_correction_rate:.2f}}} \\\\
+                Token Incorrection Rate & \\num{{{self.token_incorrection_rate:.2f}}} \\\\
                 \\bottomrule
             \\end{{tabular}}
             \\caption{{Correction metrics for the {self.model_name} model.}}
@@ -170,6 +179,9 @@ class ModelBenchmark:
         token_correction = []
         token_correction_rates = []
         token_incorrection_rates = []
+        precisions = []
+        recalls = []
+        f05s = []
         ms_per_sentences = []
 
         if self.prints: print(f"Starting benchmark iterations...")
@@ -206,6 +218,10 @@ class ModelBenchmark:
                 token_correction_rates.append(incorr2corr / (incorr2corr + incorr2incorr))
                 token_incorrection_rates.append(corr2incorr / (corr2incorr + corr2corr))
 
+                precisions.append(incorr2corr / (incorr2corr + corr2incorr))
+                recalls.append(incorr2corr / (incorr2corr + incorr2incorr))
+                f05s.append((1.25 * precisions[-1] * recalls[-1]) / (0.25 * precisions[-1] + recalls[-1]))
+
                 accuracies_sentences.append(acc_sen / len(clean_texts))
 
                 throughputs_tokens.append(total_tokens / inference_time)
@@ -229,6 +245,9 @@ class ModelBenchmark:
         avg_token_correction_rate = np.mean(token_correction_rates)
         avg_token_incorrection_rate = np.mean(token_incorrection_rates)
         avg_ms_per_sentence = np.mean(ms_per_sentences)
+        avg_precision = np.mean(precisions)
+        avg_recall = np.mean(recalls)
+        avg_f05 = np.mean(f05s)
 
         return BenchmarkResult(model_name=model_name,
                                model_size=self._get_model_size(model),
@@ -245,4 +264,7 @@ class ModelBenchmark:
                                incorr2corr=avg_token_correction[2],
                                incorr2incorr=avg_token_correction[3],
                                token_correction_rate=avg_token_correction_rate,
-                               token_incorrection_rate=avg_token_incorrection_rate)
+                               token_incorrection_rate=avg_token_incorrection_rate,
+                               precision=avg_precision,
+                               recall=avg_recall,
+                               f05=avg_f05)
