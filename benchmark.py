@@ -99,10 +99,10 @@ class BenchmarkResult:
                 Accuracy (sentences) & \\num{{{self.accuracy_sentences:.2%}}} \\\\
                 Accuracy (tokens) & \\num{{{self.accuracy_tokens:.2%}}} \\\\
                 \\midrule
-                Correct $\\rightarrow$ Correct & \\num{{{tilde_format(self.corr2corr)}}} \\\\
-                Correct $\\rightarrow$ Incorrect & \\num{{{tilde_format(self.corr2incorr)}}} \\\\
-                Incorrect $\\rightarrow$ Correct & \\num{{{tilde_format(self.incorr2corr)}}} \\\\
-                Incorrect $\\rightarrow$ Incorrect & \\num{{{tilde_format(self.incorr2incorr)}}} \\\\
+                Correct $\\rightarrow$ Correct & \\num{{{self.corr2corr}}} \\\\
+                Correct $\\rightarrow$ Incorrect & \\num{{{self.corr2incorr}}} \\\\
+                Incorrect $\\rightarrow$ Correct & \\num{{{self.incorr2corr}}} \\\\
+                Incorrect $\\rightarrow$ Incorrect & \\num{{{self.incorr2incorr}}} \\\\
                 \\midrule
                 Precision (tokens) & \\num{{{self.precision:.2%}}} \\\\
                 Recall (tokens) & \\num{{{self.recall:.2%}}} \\\\
