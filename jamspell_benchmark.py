@@ -4,7 +4,7 @@ import wandb
 from benchmark import ModelBenchmark
 from helpers import get_data_from_file
 
-wandb.init(project="Benchmarks", name="jamspell", resume="allow", id="jamspell",
+wandb.init(project="Benchmarks", name="jamspell",
            config={'GPU': 'CPU'})
 
 corrector = jamspell.TSpellCorrector()

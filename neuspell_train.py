@@ -3,7 +3,7 @@ import os
 import time
 
 import torch
-from neuspell import ElmosclstmChecker, BertChecker
+from neuspell import BertChecker, ElmosclstmChecker
 
 import wandb
 from helpers import DATA_PATH
@@ -20,25 +20,27 @@ gpu_name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
 print(f"Running on: {gpu_name}")
 
 ##############################################################################
-MODEL = {"bert": {"model_name": "subwordbert-probwordnoise",
+MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "wandb_run_name": "bert-checker",
-                  "model": BertChecker(device="cuda"), },
-         "elmo": {"model_name": "elmoscrnn-probwordnoise",
+                  "model":          BertChecker(device="cuda"), },
+         "elmo": {"model_name":     "elmoscrnn-probwordnoise",
                   "wandb_run_name": "elmo-checker",
-                  "model": ElmosclstmChecker(device="cuda")}, }
+                  "model":          ElmosclstmChecker(device="cuda")}, }
 
 _DATA = {"run":
              {"train": ["train_clean.txt", "train_corrupt.txt"],
-              "test": ["test_clean.txt", "test_corrupt.txt"]},
+              "valid": ["validation_clean.txt", "validation_corrupt.txt"],
+              "test":  ["test_clean.txt", "test_corrupt.txt"]},
          "test":
              {"train": ["small_clean.txt", "small_corrupt.txt"],
-              "test": ["small_clean.txt", "small_corrupt.txt"]}}
+              "valid": [None, None],
+              "test":  ["small_clean.txt", "small_corrupt.txt"]}}
 
 DATA = _DATA["test" if args.program_test else "run"]  # pick between training and program testing
 ##############################################################################
 CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
 wandb.init(project="neuspell", name=MODEL[args.model]["wandb_run_name"], resume="allow",
-           config={'GPU': gpu_name, })
+           id=MODEL[args.model]["wandb_run_name"], config={'GPU': gpu_name, })
 ##############################################################################
 checker = MODEL[args.model]["model"]
 
@@ -59,6 +61,8 @@ for epoch in range(args.current_epoch, args.train_epochs + args.current_epoch):
     start_time = time.time()
     checker.finetune(clean_file=os.path.join(DATA_PATH, DATA["train"][0]),
                      corrupt_file=os.path.join(DATA_PATH, DATA["train"][1]),
+                     valid_cl_file=os.path.join(DATA_PATH, DATA["valid"][0]),
+                     valid_corr_file=os.path.join(DATA_PATH, DATA["valid"][1]),
                      n_epochs=1)
     elapsed_time = time.time() - start_time
 

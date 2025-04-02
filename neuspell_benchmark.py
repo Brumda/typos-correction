@@ -7,7 +7,7 @@ from helpers import get_data_from_file
 
 gpu_name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
 
-wandb.init(project="test_benchmark", name="test", resume="allow", id="test",
+wandb.init(project="test_benchmark", name="test",
            config={'GPU': gpu_name, })
 
 checker = BertChecker(device='cuda')

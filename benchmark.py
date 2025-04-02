@@ -1,13 +1,13 @@
 import gc
+import os
 import time
 import tracemalloc
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Callable, Any
+from typing import Any, Callable
 
 import numpy as np
-
-from helpers import tilde_format
+import psutil
 
 # this way I don't need to install torch with non torch models
 try:
@@ -117,10 +117,11 @@ class BenchmarkResult:
 
 
 class ModelBenchmark:
-    def __init__(self, device: str = 'cuda', prints: bool = False):
+    def __init__(self, device: str = 'cuda', verbose: bool = False):
         self.device = device
         self.peak_memory = 0
-        self.prints = prints
+        self.peak_memory = 0
+        self.verbose = verbose
 
     @contextmanager
     def _measure_memory(self):
@@ -130,11 +131,17 @@ class ModelBenchmark:
         finally:
             current, peak = tracemalloc.get_traced_memory()
             tracemalloc.stop()
-            self.peak_memory = peak / 1024 ** 2
+            self.peak_memory = peak / 1024**2
+
+    @staticmethod
+    def _get_ram_usage():
+        process = psutil.Process(os.getpid())
+        mem_info = process.memory_info()
+        return mem_info.rss / 1024**2
 
     def _get_gpu_memory(self) -> float:
         if self.device == 'cuda':
-            return torch.cuda.max_memory_allocated() / 1024 ** 2
+            return torch.cuda.max_memory_allocated() / 1024**2
         return 0
 
     def _clear_memory(self):
@@ -148,7 +155,7 @@ class ModelBenchmark:
         if self.device == 'cuda':
             param_size = sum(p.numel() * p.element_size() for p in model.model.parameters())
             buffer_size = sum(b.numel() * b.element_size() for b in model.model.buffers())
-            total_size_mb = (param_size + buffer_size) / 1024 ** 2
+            total_size_mb = (param_size + buffer_size) / 1024**2
             return total_size_mb
         return 0
 
@@ -162,12 +169,12 @@ class ModelBenchmark:
                         num_runs: int = 5
                         ) -> BenchmarkResult:
 
-        if self.prints: print(f"Starting {warm_up_runs} warm-up iterations for {model_name}...")
+        if self.verbose: print(f"Starting {warm_up_runs} warm-up iterations for {model_name}...")
         start = time.time()
         for _ in range(warm_up_runs):
             for text in corrupt_texts[:len(corrupt_texts) // 3]:
                 _ = predict(model, text)
-        if self.prints: print(f"Finished warm-up after {time.time() - start} seconds.")
+        if self.verbose: print(f"Finished warm-up after {time.time() - start} seconds.")
 
         inference_times = []
         throughputs_tokens = []
@@ -184,7 +191,7 @@ class ModelBenchmark:
         f05s = []
         ms_per_sentences = []
 
-        if self.prints: print(f"Starting benchmark iterations...")
+        if self.verbose: print(f"Starting benchmark iterations...")
         # for run in tqdm(range(num_runs)):
         for run in range(num_runs):
             self._clear_memory()
@@ -232,39 +239,25 @@ class ModelBenchmark:
                 memory_usages.append(self.peak_memory)
                 gpu_memory_usages.append(self._get_gpu_memory())
 
-            if self.prints: print(f"Finished {run + 1}/{num_runs} iteration in {inference_time} seconds.")
+            if self.verbose: print(f"Finished {run + 1}/{num_runs} iteration in {inference_time} seconds.")
 
-        avg_accuracy_tok = np.mean(accuracies_tokens)
-        avg_accuracy_sen = np.mean(accuracies_sentences)
-        avg_inference_time = np.mean(inference_times)
-        avg_throughput_tok = np.mean(throughputs_tokens)
-        avg_throughput_sen = np.mean(throughputs_sentences)
-        avg_memory = np.mean(memory_usages)
-        avg_gpu_memory = np.mean(gpu_memory_usages)
         avg_token_correction = np.mean(token_correction, axis=0)
-        avg_token_correction_rate = np.mean(token_correction_rates)
-        avg_token_incorrection_rate = np.mean(token_incorrection_rates)
-        avg_ms_per_sentence = np.mean(ms_per_sentences)
-        avg_precision = np.mean(precisions)
-        avg_recall = np.mean(recalls)
-        avg_f05 = np.mean(f05s)
-
         return BenchmarkResult(model_name=model_name,
                                model_size=self._get_model_size(model),
-                               inference_time=avg_inference_time,
-                               peak_memory_mb=avg_memory,
-                               gpu_memory_mb=avg_gpu_memory,
-                               throughput_tokens=avg_throughput_tok,
-                               throughput_sentences=avg_throughput_sen,
-                               ms_per_sentence=avg_ms_per_sentence,
-                               accuracy_tokens=avg_accuracy_tok,
-                               accuracy_sentences=avg_accuracy_sen,
+                               inference_time=np.mean(inference_times),
+                               peak_memory_mb=np.mean(memory_usages),
+                               gpu_memory_mb=np.mean(gpu_memory_usages),
+                               throughput_tokens=np.mean(throughputs_tokens),
+                               throughput_sentences=np.mean(throughputs_sentences),
+                               ms_per_sentence=np.mean(ms_per_sentences),
+                               accuracy_tokens=np.mean(accuracies_tokens),
+                               accuracy_sentences=np.mean(accuracies_sentences),
                                corr2corr=avg_token_correction[0],
                                corr2incorr=avg_token_correction[1],
                                incorr2corr=avg_token_correction[2],
                                incorr2incorr=avg_token_correction[3],
-                               token_correction_rate=avg_token_correction_rate,
-                               token_incorrection_rate=avg_token_incorrection_rate,
-                               precision=avg_precision,
-                               recall=avg_recall,
-                               f05=avg_f05)
+                               token_correction_rate=np.mean(token_correction_rates),
+                               token_incorrection_rate=np.mean(token_incorrection_rates),
+                               precision=np.mean(precisions),
+                               recall=np.mean(recalls),
+                               f05=np.mean(f05s))
