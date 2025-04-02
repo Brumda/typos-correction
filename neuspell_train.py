@@ -3,9 +3,9 @@ import os
 import time
 
 import torch
+import wandb
 from neuspell import BertChecker, ElmosclstmChecker
 
-import wandb
 from helpers import DATA_PATH
 
 parser = argparse.ArgumentParser()

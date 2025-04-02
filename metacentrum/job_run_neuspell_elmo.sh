@@ -13,8 +13,9 @@ DATADIR="/storage/$SERVER_LOCATION/home/$USERNAME/$PROJECT_NAME"
 CHECKPOINTS="/storage/$SERVER_LOCATION/home/$USERNAME/checkpoints/elmoscrnn-probwordnoise"
 # testing:
 # cp -r "/storage/praha1/home/eliasma7/typos-correction" "$SCRATCHDIR"
+# cd $SCRATCHDIR/typos-correction
+# mkdir -p "$SCRATCHDIR/tmp_env/lib/python3.9/site-packages/neuspell_data/checkpoints/elmoscrnn-probwordnoise"
 # cp -r "/storage/praha1/home/eliasma7/checkpoints/elmoscrnn-probwordnoise" "$SCRATCHDIR/tmp_env/lib/python3.9/site-packages/neuspell_data/checkpoints"
-
 
 # export PS1="../\W \$ "
 ########################################################################################################################
@@ -51,7 +52,7 @@ PYTHON_VERSION=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.ve
 mkdir -p "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints/elmoscrnn-probwordnoise" || { echo >&2 "Failed to create checkpoints directory"; exit 1; }
 cp -r "$CHECKPOINTS" "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints" || { echo >&2 "Failed to copy checkpoint"; exit 1; }
 
-wandb login $WANDB_API_KEY || { echo >&2 "Failed to log into wandb"; exit 1; }
+wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
 echo "Starting model execution at $(date)"

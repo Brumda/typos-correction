@@ -39,7 +39,7 @@ mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/env_neuspell_bert.yaml 
 source activate "$SCRATCHDIR/tmp_env" || { echo >&2 "Failed to activate Conda environment"; exit 1; }
 echo "Environment created at $(date)"
 
-wandb login $WANDB_API_KEY || { echo >&2 "Failed to log into wandb"; exit 1; }
+wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
 PYTHON_VERSION=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
