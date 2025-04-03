@@ -25,6 +25,7 @@ class BenchmarkResult:
     model_size: float
     inference_time: float
     peak_memory_mb: float
+    ram_memory_mb: float
     gpu_memory_mb: float
     throughput_sentences: float
     throughput_tokens: float
@@ -180,6 +181,7 @@ class ModelBenchmark:
         throughputs_tokens = []
         throughputs_sentences = []
         memory_usages = []
+        ram_usages = []
         gpu_memory_usages = []
         accuracies_tokens = []
         accuracies_sentences = []
@@ -198,13 +200,16 @@ class ModelBenchmark:
             with self._measure_memory():
                 acc_sen = 0
                 inference_time = 0
+                ram_usage = 0
                 corr2corr, corr2incorr, incorr2corr, incorr2incorr = 0, 0, 0, 0
                 # for corrupt, clean in tqdm(zip(corrupt_texts, clean_texts)):
                 for corrupt, clean in zip(corrupt_texts, clean_texts):
                     # prediction
+                    ram_before = self._get_ram_usage()
                     start_time = time.time()
                     prediction = predict(model, corrupt)
                     inference_time += time.time() - start_time
+                    ram_usage += self._get_ram_usage() - ram_before
 
                     # statistics
                     acc_sen += prediction == clean
@@ -231,6 +236,7 @@ class ModelBenchmark:
 
                 accuracies_sentences.append(acc_sen / len(clean_texts))
 
+                ram_usages.append(ram_usage / total_tokens)
                 throughputs_tokens.append(total_tokens / inference_time)
                 throughputs_sentences.append(len(corrupt_texts) / inference_time)
                 ms_per_sentences.append((inference_time / len(clean_texts)) * 1000)
@@ -260,4 +266,5 @@ class ModelBenchmark:
                                token_incorrection_rate=np.mean(token_incorrection_rates),
                                precision=np.mean(precisions),
                                recall=np.mean(recalls),
-                               f05=np.mean(f05s))
+                               f05=np.mean(f05s),
+                               ram_memory_mb=np.mean(ram_usages),)
