@@ -49,6 +49,7 @@ class BenchmarkResult:
                 f"   Inference Time: {self.inference_time:.2f} s\n"
                 f"   Peak Memory: {self.peak_memory_mb:.2f} MB\n"
                 f"   GPU Memory: {self.gpu_memory_mb:.2f} MB\n"
+                f"   RAM Memory: {self.ram_memory_mb:.2f} MB\n"
                 f"   Throughput: {self.throughput_sentences:.2f} sentences/sec\n"
                 f"   Throughput: {self.ms_per_sentence:.2f} ms/sentence\n"
                 f"   Throughput: {self.throughput_tokens:.2f} tokens/sec\n"
@@ -77,6 +78,7 @@ class BenchmarkResult:
                 \\midrule
                 Model size & \\num{{{self.model_size:.2f}}} MB \\\\
                 Peak Memory & \\num{{{self.peak_memory_mb:.2f}}} MB \\\\
+                RAM Memory & \\num{{{self.ram_memory_mb:.2f}}} MB \\\\
                 GPU Memory & \\num{{{self.gpu_memory_mb:.2f}}} MB \\\\
                 \\midrule
                 Total Inference Time & \\num{{{self.inference_time:.2f}}} s \\\\
