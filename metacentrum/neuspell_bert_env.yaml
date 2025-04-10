@@ -4,6 +4,7 @@ channels:
   - defaults
 dependencies:
   - sentencepiece
+  - pandas
   - pip
   - pip:
       - wandb

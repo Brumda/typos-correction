@@ -3,8 +3,15 @@ import os
 import time
 
 import torch
+from neuspell import BertChecker
+
 import wandb
-from neuspell import BertChecker, ElmosclstmChecker
+
+# cant import unless specifically set up
+try:
+    from neuspell import ElmosclstmChecker
+except ImportError:
+    pass
 
 from helpers import DATA_PATH
 
