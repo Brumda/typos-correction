@@ -45,6 +45,7 @@ echo "Environment created at $(date)"
 wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
+mkdir pred_typo_models
 echo "Starting model execution at $(date)"
 python detect_typo_model.py || { echo >&2 "Python script failed"; exit 1; }
 
