@@ -1,0 +1,304 @@
+import pandas as pd
+import torch
+import torch.nn as nn
+from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader, Dataset
+from transformers import AutoModel, AutoTokenizer
+
+import wandb
+from helpers import DATA_PATH
+
+
+class TypoDetectionModel:
+    def __init__(self,
+                 model_name="nreimers/MiniLM-L6-H384-uncased",
+                 batch_size=32,
+                 max_len=128,
+                 save_path="pred_typo_models/best_model.pt",
+                 wandb_project="typo-detection-probability",
+                 wandb_run_name="minilm-typo-detection"
+                 ):
+        # Configuration
+        self.model_name = model_name
+        self.batch_size = batch_size
+        self.max_len = max_len
+        self.save_path = save_path
+        self.wandb_project = wandb_project
+        self.wandb_run_name = wandb_run_name
+
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self.tokenizer = None
+        self.model = None
+        self._initialize_model()
+
+    def _initialize_model(self):
+        """Initialize the tokenizer and model architecture"""
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = self._create_model().to(self.device)
+
+    def _create_model(self):
+        """Create the neural network model"""
+
+        class TypoDetection(nn.Module):
+            def __init__(self, model_name):
+                super().__init__()
+                self.encoder = AutoModel.from_pretrained(model_name)
+                self.head = nn.Linear(self.encoder.config.hidden_size, 1)
+
+            def forward(self, input_ids, attention_mask):
+                outputs = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
+                cls_token = outputs.last_hidden_state[:, 0]
+                prob = torch.sigmoid(self.head(cls_token)).squeeze(1)
+                return prob
+
+        return TypoDetection(self.model_name)
+
+    def load_data(self):
+        """Load and prepare the dataset"""
+        df = pd.read_csv(DATA_PATH + "prob_df.csv", dtype={0: str, 1: float})
+        train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
+        train_df, val_df = train_test_split(train_df, test_size=0.2, random_state=42)
+        train_df.drop(columns="target", inplace=True)
+        val_df.drop(columns="target", inplace=True)
+        test_df.drop(columns="target", inplace=True)
+        return train_df, val_df, test_df
+
+    class _SentenceDataset(Dataset):
+        """Dataset with tokenization"""
+
+        def __init__(self, df, tokenizer, max_len=128):
+            self.sentences = df["text"].tolist()
+            self.labels = df["prob"].values.astype("float32")
+            self.tokenizer = tokenizer
+            self.max_len = max_len
+
+        def __len__(self):
+            return len(self.labels)
+
+        def __getitem__(self, idx):
+            sentence = self.sentences[idx]
+            inputs = self.tokenizer(
+                    sentence,
+                    padding='max_length',
+                    truncation=True,
+                    max_length=self.max_len,
+                    return_tensors='pt'
+            )
+            item = {key: val.squeeze(0) for key, val in inputs.items()}
+            item["label"] = torch.tensor(self.labels[idx])
+            return item
+
+    class _EarlyStopping:
+        def __init__(self, patience, delta, path):
+            self.patience = patience
+            self.delta = delta
+            self.path = path
+            self.counter = 0
+            self.best_score = None
+            self.early_stop = False
+
+        def __call__(self, val_loss, model):
+            if self.best_score is None:
+                self.best_score = val_loss
+                self._save_checkpoint(val_loss, model)
+            elif val_loss > self.best_score + self.delta:  # No improvement
+                self.counter += 1
+                print(f"EarlyStopping counter: {self.counter} out of {self.patience}")
+                if self.counter >= self.patience:
+                    self.early_stop = True
+            else:  # Improvement
+                self.best_score = val_loss
+                self._save_checkpoint(val_loss, model)
+                self.counter = 0
+
+        def _save_checkpoint(self, val_loss, model):
+            print(f"Validation loss decreased ({self.best_score:.6f} --> {val_loss:.6f}). Saving model...")
+            torch.save(model.state_dict(), self.path)
+
+    def train(self, train_df, val_df, epochs=10, learning_rate=2e-5, patience=3, delta=0.001, use_wandb=True):
+        """Train the model with early stopping"""
+        if use_wandb:
+            wandb.init(project=self.wandb_project, name=self.wandb_run_name)
+
+        ####################################
+        # Data initialization
+        ####################################
+        train_ds = self._SentenceDataset(train_df, self.tokenizer, self.max_len)
+        val_ds = self._SentenceDataset(val_df, self.tokenizer, self.max_len)
+
+        train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
+        val_loader = DataLoader(val_ds, batch_size=self.batch_size)
+
+        ####################################
+        # optimizer and loss function
+        ####################################
+        optimizer = torch.optim.AdamW(self.model.parameters(), lr=learning_rate)
+        loss_fn = nn.MSELoss()  # Mean Squared Error for probability regression
+
+        ####################################
+        # Initialize early stopping
+        ####################################
+        early_stopping = self._EarlyStopping(
+                patience=patience,
+                delta=delta,
+                path=self.save_path
+        )
+        ####################################
+        # Training loop
+        ####################################
+        for epoch in range(epochs):
+            self.model.train()
+            total_loss = 0
+            ####################################
+            # Train phase
+            ####################################
+            # for batch in tqdm(train_loader):
+            for batch in train_loader:
+                input_ids = batch["input_ids"].to(self.device)
+                attention_mask = batch["attention_mask"].to(self.device)
+                labels = batch["label"].to(self.device)
+
+                optimizer.zero_grad()
+                preds = self.model(input_ids, attention_mask)
+                loss = loss_fn(preds, labels)
+                loss.backward()
+                optimizer.step()
+
+                total_loss += loss.item()
+
+            avg_train_loss = total_loss / len(train_loader)
+            print(f"[Epoch {epoch + 1}] Train Loss: {avg_train_loss:.4f}")
+
+            ####################################
+            # Validation phase
+            ####################################
+            val_metrics = self._validate(val_loader, loss_fn)
+            avg_val_loss = val_metrics["val_loss"]
+            mae = val_metrics["mae"]
+
+            ####################################
+            # Log metrics
+            ####################################
+            metrics = {
+                    "epoch":      epoch + 1,
+                    "train_loss": avg_train_loss,
+                    "val_loss":   avg_val_loss,
+                    "val_mae":    mae
+            }
+
+            if use_wandb:
+                wandb.log(metrics)
+
+            print(
+                    f"[Epoch {epoch + 1}] Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | MAE: {mae:.4f}")
+
+            ####################################
+            # Check early stopping
+            ####################################
+            early_stopping(avg_val_loss, self.model)
+            if early_stopping.early_stop:
+                print("Early stopping triggered")
+                break
+
+        ####################################
+        # Load the best model
+        ####################################
+        self.load_model()
+        if use_wandb:
+            wandb.finish()
+
+    def _validate(self, val_loader, loss_fn):
+        """Validate the model and return metrics"""
+        self.model.eval()
+        val_loss = 0
+        all_preds = []
+        all_labels = []
+
+        with torch.no_grad():
+            for batch in val_loader:
+                input_ids = batch["input_ids"].to(self.device)
+                attention_mask = batch["attention_mask"].to(self.device)
+                labels = batch["label"].to(self.device)
+
+                preds = self.model(input_ids, attention_mask)
+                loss = loss_fn(preds, labels)
+                val_loss += loss.item()
+
+                all_preds.extend(preds.cpu().numpy())
+                all_labels.extend(labels.cpu().numpy())
+
+        avg_val_loss = val_loss / len(val_loader)
+
+        ####################################
+        # Calculate metrics
+        ####################################
+        all_preds_tensor = torch.tensor(all_preds)
+        all_labels_tensor = torch.tensor(all_labels)
+        mae = torch.nn.functional.l1_loss(all_preds_tensor, all_labels_tensor).item()
+
+        return {
+                "val_loss": avg_val_loss,
+                "mae":      mae
+        }
+
+    def evaluate(self, test_df):
+        """Evaluate the model on test data"""
+        test_ds = self._SentenceDataset(test_df, self.tokenizer, self.max_len)
+        test_loader = DataLoader(test_ds, batch_size=self.batch_size)
+
+        loss_fn = nn.MSELoss()
+        metrics = self._validate(test_loader, loss_fn)
+
+        print(f"Test Loss: {metrics['val_loss']:.4f} | Test MAE: {metrics['mae']:.4f}")
+        return metrics
+
+    def predict(self, sentence):
+        """Make a prediction for a single sentence"""
+        self.model.eval()
+
+        ####################################
+        # Tokenize the input
+        ####################################
+        inputs = self.tokenizer(
+                sentence,
+                padding='max_length',
+                truncation=True,
+                max_length=self.max_len,
+                return_tensors='pt'
+        )
+
+        input_ids = inputs["input_ids"].to(self.device)
+        attention_mask = inputs["attention_mask"].to(self.device)
+
+        ####################################
+        # Get prediction
+        ####################################
+        with torch.no_grad():
+            prob = self.model(input_ids, attention_mask)
+
+        return prob.item()
+
+    def save_model(self, path=None):
+        """Save the model to a file"""
+        if path is None:
+            path = self.save_path
+        torch.save(self.model.state_dict(), path)
+        print(f"Model saved to {path}")
+
+    def load_model(self, path=None):
+        """Load the model from a file"""
+        if path is None:
+            path = self.save_path
+        self.model.load_state_dict(torch.load(path))
+        print(f"Model loaded from {path}")
+
+
+if __name__ == "__main__":
+    typo_model = TypoDetectionModel()
+    train_df, val_df, test_df = typo_model.load_data()
+    typo_model.train(train_df, val_df, epochs=20)
+    metrics = typo_model.evaluate(test_df)
+    with open("typo_detect_result.txt", "w") as f:
+        for key, value in metrics.items():
+            f.write(f"{key}: '{value}'\n")

@@ -3,7 +3,9 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - sentencepiece
+  - pandas
+  - numpy
+  - scikit-learn
   - pip
   - pip:
       - wandb
