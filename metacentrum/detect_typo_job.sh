@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N detect_typo
+#PBS -N DETECT_TYPO
 #PBS -l walltime=20:0:0
 #PBS -l select=1:ncpus=1:ngpus=1:mem=100gb:scratch_local=100gb
 #PBS -m abe
