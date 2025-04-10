@@ -38,7 +38,7 @@ export PATH=/storage/praha1/home/eliasma7/extract_dir/usr/bin/:$PATH
 export SWIG_LIB=/storage/praha1/home/eliasma7/extract_dir/usr/share/swig3.0
 
 echo "Creating conda environment at $(date)"
-mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/env_jamspell.yaml || { echo >&2 "Failed to create Conda environment"; exit 1; }
+mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/jamspell_env.yaml || { echo >&2 "Failed to create Conda environment"; exit 1; }
 source activate "$SCRATCHDIR/tmp_env" || { echo >&2 "Failed to activate Conda environment"; exit 1; }
 echo "Environment created at $(date)"
 

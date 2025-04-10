@@ -1,0 +1,13 @@
+name: metacentrum_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - sentencepiece
+  - pip
+  - pip:
+      - wandb
+      - torch
+      - torchaudio
+      - torchvision
+      - transformers

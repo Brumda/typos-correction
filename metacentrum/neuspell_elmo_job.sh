@@ -42,7 +42,7 @@ WANDB_API_KEY=$(cat $DATADIR/../wandb_key)
 module load mambaforge
 
 echo "Creating conda environment at $(date)"
-mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/env_neuspell_elmo.yaml || { echo >&2 "Failed to create Conda environment"; exit 1; }
+mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/neuspell_elmo_env.yaml || { echo >&2 "Failed to create Conda environment"; exit 1; }
 source activate "$SCRATCHDIR/tmp_env" || { echo >&2 "Failed to activate Conda environment"; exit 1; }
 python -m spacy download en_core_web_sm || { echo >&2 "Failed to download spacy"; exit 1; }
 echo "Environment created at $(date)"
