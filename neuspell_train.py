@@ -11,7 +11,7 @@ import wandb
 try:
     from neuspell import ElmosclstmChecker
 except ImportError:
-    pass
+    ElmosclstmChecker = None
 
 from helpers import DATA_PATH
 
@@ -32,7 +32,7 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "model":          BertChecker(device="cuda"), },
          "elmo": {"model_name":     "elmoscrnn-probwordnoise",
                   "wandb_run_name": "elmo-checker",
-                  "model":          ElmosclstmChecker(device="cuda")}, }
+                  "model":          ElmosclstmChecker(device="cuda") if ElmosclstmChecker else None}, }
 
 _DATA = {"run":
              {"train": ["train_clean.txt", "train_corrupt.txt"],
