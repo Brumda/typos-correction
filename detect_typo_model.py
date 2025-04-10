@@ -59,9 +59,6 @@ class TypoDetectionModel:
         df = pd.read_csv(DATA_PATH + "prob_df.csv", dtype={0: str, 1: float})
         train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
         train_df, val_df = train_test_split(train_df, test_size=0.2, random_state=42)
-        train_df.drop(columns="target", inplace=True)
-        val_df.drop(columns="target", inplace=True)
-        test_df.drop(columns="target", inplace=True)
         return train_df, val_df, test_df
 
     class _SentenceDataset(Dataset):
