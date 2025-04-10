@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -N ELMO_CHECKER
-#PBS -l walltime=20:0:0
+#PBS -l walltime=30:0:0
 #PBS -l select=1:ncpus=1:ngpus=1:mem=100gb:scratch_local=100gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
@@ -56,7 +56,7 @@ wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
 echo "Starting model execution at $(date)"
-python neuspell_train.py --model="elmo" || { echo >&2 "Python script failed"; exit 1; }
+python neuspell_train.py --model="elmo" --train_epochs=10 || { echo >&2 "Python script failed"; exit 1; }
 
 cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/../elmo_results_$(date '+%Y_%m_%d_%H').txt"
 

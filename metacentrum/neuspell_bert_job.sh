@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -N BERT_CHECKER
-#PBS -l walltime=20:0:0
+#PBS -l walltime=24:0:0
 #PBS -l select=1:ncpus=1:ngpus=1:gpu_mem=44gb:mem=100gb:scratch_local=100gb
 #PBS -m abe
 #PBS -j oe
@@ -54,7 +54,7 @@ wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
 echo "Starting model execution at $(date)"
-python neuspell_train.py || { echo >&2 "Python script failed"; exit 1; }
+python neuspell_train.py --train_epochs=10|| { echo >&2 "Python script failed"; exit 1; }
 
 cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/../bert_results_$(date '+%Y_%m_%d_%H').txt"
 
