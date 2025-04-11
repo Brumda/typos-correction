@@ -272,4 +272,4 @@ class ModelBenchmark:
                                recall=np.mean(recalls),
                                f05=np.mean(f05s),
                                ram_memory_mb=np.mean(ram_usages),
-                               peak_ram_mb=self.peak_ram,)
+                               peak_ram_memory_mb=self.peak_ram,)
