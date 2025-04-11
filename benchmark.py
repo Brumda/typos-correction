@@ -1,7 +1,6 @@
 import gc
 import os
 import time
-import tracemalloc
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any, Callable
@@ -24,7 +23,6 @@ class BenchmarkResult:
     model_name: str
     model_size: float
     inference_time: float
-    peak_memory_mb: float
     ram_memory_mb: float
     gpu_memory_mb: float
     throughput_sentences: float
@@ -47,7 +45,6 @@ class BenchmarkResult:
                 f"   Model: {self.model_name}\n"
                 f"   Size: {self.model_size:.2f} MB\n"
                 f"   Inference Time: {self.inference_time:.2f} s\n"
-                f"   Peak Memory: {self.peak_memory_mb:.2f} MB\n"
                 f"   GPU Memory: {self.gpu_memory_mb:.2f} MB\n"
                 f"   RAM Memory: {self.ram_memory_mb:.2f} MB\n"
                 f"   Throughput: {self.throughput_sentences:.2f} sentences/sec\n"
@@ -77,7 +74,6 @@ class BenchmarkResult:
                 \\multicolumn{{2}}{{c}}{{Model statistics}} \\\\
                 \\midrule
                 Model size & \\num{{{self.model_size:.2f}}} MB \\\\
-                Peak Memory & \\num{{{self.peak_memory_mb:.2f}}} MB \\\\
                 RAM Memory & \\num{{{self.ram_memory_mb:.2f}}} MB \\\\
                 GPU Memory & \\num{{{self.gpu_memory_mb:.2f}}} MB \\\\
                 \\midrule
@@ -122,39 +118,45 @@ class BenchmarkResult:
 class ModelBenchmark:
     def __init__(self, device: str = 'cuda', verbose: bool = False):
         self.device = device
-        self.peak_memory = 0
-        self.peak_memory = 0
+        self.peak_ram = 0
         self.verbose = verbose
+        self.process = psutil.Process(os.getpid())
 
     @contextmanager
     def _measure_memory(self):
-        tracemalloc.start()
+        ram_start = self._get_ram_usage()
+
+        if self.device == 'cuda':
+            torch.cuda.reset_peak_memory_stats()
+
         try:
             yield
         finally:
-            current, peak = tracemalloc.get_traced_memory()
-            tracemalloc.stop()
-            self.peak_memory = peak / 1024**2
+            ram_end = self._get_ram_usage()
+            ram_used = ram_end - ram_start
+            self.peak_ram = max(self.peak_ram, ram_used)
 
-    @staticmethod
-    def _get_ram_usage():
-        process = psutil.Process(os.getpid())
-        mem_info = process.memory_info()
-        return mem_info.rss / 1024**2
+    def _get_ram_usage(self):
+        """Get current RAM usage in MB"""
+        self.process.memory_info()  # Refresh memory info
+        return self.process.memory_info().rss / 1024**2
 
     def _get_gpu_memory(self) -> float:
+        """Get current GPU memory usage in MB"""
         if self.device == 'cuda':
             return torch.cuda.max_memory_allocated() / 1024**2
         return 0
 
     def _clear_memory(self):
+        """Clear memory and caches"""
+        self.peak_ram = 0
         gc.collect()
         if self.device == 'cuda':
             torch.cuda.empty_cache()
             torch.cuda.reset_peak_memory_stats()
 
     def _get_model_size(self, model) -> float:
-        """Pytorch models only"""
+        """Get model size in MB (PyTorch models only)"""
         if self.device == 'cuda':
             param_size = sum(p.numel() * p.element_size() for p in model.model.parameters())
             buffer_size = sum(b.numel() * b.element_size() for b in model.model.buffers())
@@ -199,6 +201,7 @@ class ModelBenchmark:
         # for run in tqdm(range(num_runs)):
         for run in range(num_runs):
             self._clear_memory()
+
             with self._measure_memory():
                 acc_sen = 0
                 inference_time = 0
@@ -244,7 +247,6 @@ class ModelBenchmark:
                 ms_per_sentences.append((inference_time / len(clean_texts)) * 1000)
 
                 inference_times.append(inference_time)
-                memory_usages.append(self.peak_memory)
                 gpu_memory_usages.append(self._get_gpu_memory())
 
             if self.verbose: print(f"Finished {run + 1}/{num_runs} iteration in {inference_time} seconds.")
@@ -253,7 +255,6 @@ class ModelBenchmark:
         return BenchmarkResult(model_name=model_name,
                                model_size=self._get_model_size(model),
                                inference_time=np.mean(inference_times),
-                               peak_memory_mb=np.mean(memory_usages),
                                gpu_memory_mb=np.mean(gpu_memory_usages),
                                throughput_tokens=np.mean(throughputs_tokens),
                                throughput_sentences=np.mean(throughputs_sentences),
@@ -269,4 +270,4 @@ class ModelBenchmark:
                                precision=np.mean(precisions),
                                recall=np.mean(recalls),
                                f05=np.mean(f05s),
-                               ram_memory_mb=np.mean(ram_usages),)
+                               ram_memory_mb=np.mean(ram_usages), )
