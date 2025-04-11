@@ -56,9 +56,9 @@ class TypoDetectionModel:
 
     def load_data(self):
         """Load and prepare the dataset"""
-        df = pd.read_csv(DATA_PATH + "prob_df.csv", dtype={0: str, 1: float})
-        train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
-        train_df, val_df = train_test_split(train_df, test_size=0.2, random_state=42)
+        train_df = pd.read_csv(DATA_PATH + "train_prob_df.csv", dtype={0: str, 1: float})
+        val_df = pd.read_csv(DATA_PATH + "val_prob_df.csv", dtype={0: str, 1: float})
+        test_df = pd.read_csv(DATA_PATH + "test_prob_df.csv", dtype={0: str, 1: float})
         return train_df, val_df, test_df
 
     class _SentenceDataset(Dataset):
@@ -97,16 +97,16 @@ class TypoDetectionModel:
 
         def __call__(self, val_loss, model):
             if self.best_score is None:
-                self.best_score = val_loss
                 self._save_checkpoint(val_loss, model)
+                self.best_score = val_loss
             elif val_loss > self.best_score + self.delta:  # No improvement
                 self.counter += 1
                 print(f"EarlyStopping counter: {self.counter} out of {self.patience}")
                 if self.counter >= self.patience:
                     self.early_stop = True
             else:  # Improvement
-                self.best_score = val_loss
                 self._save_checkpoint(val_loss, model)
+                self.best_score = val_loss
                 self.counter = 0
 
         def _save_checkpoint(self, val_loss, model):

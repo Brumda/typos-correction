@@ -24,6 +24,7 @@ class BenchmarkResult:
     model_size: float
     inference_time: float
     ram_memory_mb: float
+    peak_ram_memory_mb: float
     gpu_memory_mb: float
     throughput_sentences: float
     throughput_tokens: float
@@ -47,6 +48,7 @@ class BenchmarkResult:
                 f"   Inference Time: {self.inference_time:.2f} s\n"
                 f"   GPU Memory: {self.gpu_memory_mb:.2f} MB\n"
                 f"   RAM Memory: {self.ram_memory_mb:.2f} MB\n"
+                f"   Peak RAM Memory: {self.peak_ram_memory_mb:.2f} MB\n"
                 f"   Throughput: {self.throughput_sentences:.2f} sentences/sec\n"
                 f"   Throughput: {self.ms_per_sentence:.2f} ms/sentence\n"
                 f"   Throughput: {self.throughput_tokens:.2f} tokens/sec\n"
@@ -75,6 +77,7 @@ class BenchmarkResult:
                 \\midrule
                 Model size & \\num{{{self.model_size:.2f}}} MB \\\\
                 RAM Memory & \\num{{{self.ram_memory_mb:.2f}}} MB \\\\
+                Peak RAM Memory & \\num{{{self.peak_ram_memory_mb:.2f}}} MB \\\\
                 GPU Memory & \\num{{{self.gpu_memory_mb:.2f}}} MB \\\\
                 \\midrule
                 Total Inference Time & \\num{{{self.inference_time:.2f}}} s \\\\
@@ -149,7 +152,6 @@ class ModelBenchmark:
 
     def _clear_memory(self):
         """Clear memory and caches"""
-        self.peak_ram = 0
         gc.collect()
         if self.device == 'cuda':
             torch.cuda.empty_cache()
@@ -184,7 +186,6 @@ class ModelBenchmark:
         inference_times = []
         throughputs_tokens = []
         throughputs_sentences = []
-        memory_usages = []
         ram_usages = []
         gpu_memory_usages = []
         accuracies_tokens = []
@@ -201,12 +202,12 @@ class ModelBenchmark:
         # for run in tqdm(range(num_runs)):
         for run in range(num_runs):
             self._clear_memory()
+            acc_sen = 0
+            inference_time = 0
+            ram_usage = 0
+            corr2corr, corr2incorr, incorr2corr, incorr2incorr = 0, 0, 0, 0
 
             with self._measure_memory():
-                acc_sen = 0
-                inference_time = 0
-                ram_usage = 0
-                corr2corr, corr2incorr, incorr2corr, incorr2incorr = 0, 0, 0, 0
                 # for corrupt, clean in tqdm(zip(corrupt_texts, clean_texts)):
                 for corrupt, clean in zip(corrupt_texts, clean_texts):
                     # prediction
@@ -270,4 +271,5 @@ class ModelBenchmark:
                                precision=np.mean(precisions),
                                recall=np.mean(recalls),
                                f05=np.mean(f05s),
-                               ram_memory_mb=np.mean(ram_usages), )
+                               ram_memory_mb=np.mean(ram_usages),
+                               peak_ram_mb=self.peak_ram,)
