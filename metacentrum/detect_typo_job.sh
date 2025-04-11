@@ -53,6 +53,6 @@ python detect_typo_model.py || { echo >&2 "Python script failed"; exit 1; }
 cp "$SCRATCHDIR/$PROJECT_NAME/typo_detect_result.txt" "$DATADIR/../detect_typo_result_$(date '+%Y_%m_%d_%H').txt"
 
 source_file="$SCRATCHDIR/$PROJECT_NAME/pred_typo_models"
-cp -r "$source_file" "$DATADIR/pred_typo_models_$(date '+%Y_%m_%d_%H')" || { echo >&2 "Source file does not exist."; exit 1; }
+cp -r "$source_file" "$DATADIR/../pred_typo_models_$(date '+%Y_%m_%d_%H')" || { echo >&2 "Source file does not exist."; exit 1; }
 
 echo "Task finished at $(date)"
