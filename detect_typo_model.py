@@ -97,8 +97,8 @@ class TypoDetectionModel:
 
         def __call__(self, val_loss, model):
             if self.best_score is None:
-                self._save_checkpoint(val_loss, model)
                 self.best_score = val_loss
+                self._save_checkpoint(val_loss, model)
             elif val_loss > self.best_score + self.delta:  # No improvement
                 self.counter += 1
                 print(f"EarlyStopping counter: {self.counter} out of {self.patience}")
