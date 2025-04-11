@@ -211,6 +211,7 @@ class ModelBenchmark:
                 # for corrupt, clean in tqdm(zip(corrupt_texts, clean_texts)):
                 for corrupt, clean in zip(corrupt_texts, clean_texts):
                     # prediction
+                    # TODO add the pred typo model to determine if prediction should be even made
                     ram_before = self._get_ram_usage()
                     start_time = time.time()
                     prediction = predict(model, corrupt)

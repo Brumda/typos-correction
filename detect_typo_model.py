@@ -113,7 +113,7 @@ class TypoDetectionModel:
             print(f"Validation loss decreased ({self.best_score:.6f} --> {val_loss:.6f}). Saving model...")
             torch.save(model.state_dict(), self.path)
 
-    def train(self, train_df, val_df, epochs=10, learning_rate=2e-5, patience=3, delta=0.001, use_wandb=True):
+    def train(self, train_df, val_df, epochs=10, learning_rate=1e-5, patience=3, delta=0.001, use_wandb=True):
         """Train the model with early stopping"""
         if use_wandb:
             wandb.init(project=self.wandb_project, name=self.wandb_run_name)
