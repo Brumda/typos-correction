@@ -8,6 +8,8 @@ from typing import Any, Callable
 import numpy as np
 import psutil
 
+from detect_typo_model import TypoDetectionModel
+
 # this way I don't need to install torch with non torch models
 try:
     import torch
@@ -41,6 +43,9 @@ class BenchmarkResult:
     token_correction_rate: float
     token_incorrection_rate: float  # for lack of a better name
 
+    typo_detection_model_inference_time: float
+    typo_detection_model_ms_per_sentence: float
+
     def __str__(self):
         return (f"Benchmark results:\n"
                 f"   Model: {self.model_name}\n"
@@ -62,7 +67,9 @@ class BenchmarkResult:
                 f"   Precision: {self.precision:.2%}\n"
                 f"   F0.5: {self.f05:.2%}\n"
                 f"   Token Correction Rate: {self.token_correction_rate:.2%}\n"
-                f"   Token Incorrection Rate: {self.token_incorrection_rate:.2%}\n")
+                f"   Token Incorrection Rate: {self.token_incorrection_rate:.2%}\n"
+                f"   Inference Time typo detection: {self.typo_detection_model_inference_time:.2f} s\n"
+                f"   Throughput typo detection: {self.typo_detection_model_ms_per_sentence:.2f} ms/sentence\n")
 
     def __repr__(self):
         return self.__str__()
@@ -84,6 +91,8 @@ class BenchmarkResult:
                 Throughput (sentences/sec) & \\num{{{self.throughput_sentences:.2f}}} \\\\
                 Throughput (ms/sentence) & \\num{{{self.ms_per_sentence:.2f}}} \\\\
                 Throughput (tokens/sec) & \\num{{{self.throughput_tokens:.2f}}} \\\\
+                Total Inference Time typo detection& \\num{{{self.typo_detection_model_inference_time:.2f}}} s \\\\
+                Throughput typo detection (ms/sentence) & \\num{{{self.typo_detection_model_inference_time:.2f}}} \\\\
                 \\bottomrule
             \\end{{tabular}}
             \\caption{{Performance metrics for the {self.model_name} model.}}
@@ -119,11 +128,13 @@ class BenchmarkResult:
 
 
 class ModelBenchmark:
-    def __init__(self, device: str = 'cuda', verbose: bool = False):
+    def __init__(self, path: str = "pred_typo_models/best_model.pt", device: str = 'cuda', verbose: bool = False):
         self.device = device
         self.peak_ram = 0
         self.verbose = verbose
         self.process = psutil.Process(os.getpid())
+        self.predict_typo = TypoDetectionModel()
+        self.predict_typo.load_model(path)
 
     @contextmanager
     def _measure_memory(self):
@@ -184,6 +195,7 @@ class ModelBenchmark:
         if self.verbose: print(f"Finished warm-up after {time.time() - start} seconds.")
 
         inference_times = []
+        inference_times_typo_detect = []
         throughputs_tokens = []
         throughputs_sentences = []
         ram_usages = []
@@ -197,6 +209,7 @@ class ModelBenchmark:
         recalls = []
         f05s = []
         ms_per_sentences = []
+        ms_per_sentences_typo_detect = []
 
         if self.verbose: print(f"Starting benchmark iterations...")
         # for run in tqdm(range(num_runs)):
@@ -204,6 +217,7 @@ class ModelBenchmark:
             self._clear_memory()
             acc_sen = 0
             inference_time = 0
+            inference_time_typo_detect = 0
             ram_usage = 0
             corr2corr, corr2incorr, incorr2corr, incorr2incorr = 0, 0, 0, 0
 
@@ -211,13 +225,18 @@ class ModelBenchmark:
                 # for corrupt, clean in tqdm(zip(corrupt_texts, clean_texts)):
                 for corrupt, clean in zip(corrupt_texts, clean_texts):
                     # prediction
-                    # TODO add the pred typo model to determine if prediction should be even made
-                    ram_before = self._get_ram_usage()
-                    start_time = time.time()
-                    prediction = predict(model, corrupt)
-                    inference_time += time.time() - start_time
-                    ram_usage += self._get_ram_usage() - ram_before
+                    start_time_detect = time.time()
+                    typo_prob = self.predict_typo.predict(corrupt)
+                    inference_time_typo_detect += time.time() - start_time_detect
 
+                    if typo_prob > 0.5:
+                        ram_before = self._get_ram_usage()
+                        start_time = time.time()
+                        prediction = predict(model, corrupt)
+                        inference_time += time.time() - start_time
+                        ram_usage += self._get_ram_usage() - ram_before
+                    else:
+                        prediction = corrupt
                     # statistics
                     acc_sen += prediction == clean
                     for corrupt_token, clean_token, predict_token in zip(corrupt.split(), clean.split(),
@@ -231,24 +250,39 @@ class ModelBenchmark:
                         elif corrupt_token != clean_token and predict_token != clean_token:
                             incorr2incorr += 1
 
+                ####################################
+                # bare token statistics
+                ####################################
                 total_tokens = corr2corr + corr2incorr + incorr2corr + incorr2incorr
                 token_correction.append((corr2corr, corr2incorr, incorr2corr, incorr2incorr))
                 accuracies_tokens.append((corr2corr + incorr2corr) / total_tokens)
                 token_correction_rates.append(incorr2corr / (incorr2corr + incorr2incorr))
                 token_incorrection_rates.append(corr2incorr / (corr2incorr + corr2corr))
 
+                ####################################
+                # more convoluted statistics
+                ####################################
                 precisions.append(incorr2corr / (incorr2corr + corr2incorr))
                 recalls.append(incorr2corr / (incorr2corr + incorr2incorr))
                 f05s.append((1.25 * precisions[-1] * recalls[-1]) / (0.25 * precisions[-1] + recalls[-1]))
-
                 accuracies_sentences.append(acc_sen / len(clean_texts))
 
-                ram_usages.append(ram_usage / total_tokens)
+                ####################################
+                # time based statistics
+                ####################################
                 throughputs_tokens.append(total_tokens / inference_time)
                 throughputs_sentences.append(len(corrupt_texts) / inference_time)
                 ms_per_sentences.append((inference_time / len(clean_texts)) * 1000)
-
                 inference_times.append(inference_time)
+
+                # typo detection model
+                ms_per_sentences_typo_detect.append((inference_time_typo_detect / len(clean_texts)) * 1000)
+                inference_times_typo_detect.append(inference_time_typo_detect)
+
+                ####################################
+                # memory based statistics
+                ####################################
+                ram_usages.append(ram_usage / total_tokens)
                 gpu_memory_usages.append(self._get_gpu_memory())
 
             if self.verbose: print(f"Finished {run + 1}/{num_runs} iteration in {inference_time} seconds.")
@@ -273,4 +307,7 @@ class ModelBenchmark:
                                recall=np.mean(recalls),
                                f05=np.mean(f05s),
                                ram_memory_mb=np.mean(ram_usages),
-                               peak_ram_memory_mb=self.peak_ram,)
+                               peak_ram_memory_mb=self.peak_ram,
+                               typo_detection_model_inference_time=np.mean(inference_times_typo_detect),
+                               typo_detection_model_ms_per_sentence=np.mean(ms_per_sentences_typo_detect),
+                               )
