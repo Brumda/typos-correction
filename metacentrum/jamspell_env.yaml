@@ -6,6 +6,7 @@ dependencies:
   - python=3.10
   - wandb
   - numpy
+  - transformers
   - pandas
   - scikit-learn
   - pip

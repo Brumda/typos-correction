@@ -6,6 +6,7 @@ dependencies:
   - sentencepiece
   - pandas
   - numpy
+  - transformers
   - wandb
   - scikit-learn
   - pip
