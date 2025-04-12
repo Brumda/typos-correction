@@ -92,7 +92,7 @@ class BenchmarkResult:
                 Throughput (ms/sentence) & \\num{{{self.ms_per_sentence:.2f}}} \\\\
                 Throughput (tokens/sec) & \\num{{{self.throughput_tokens:.2f}}} \\\\
                 Total Inference Time typo detection& \\num{{{self.typo_detection_model_inference_time:.2f}}} s \\\\
-                Throughput typo detection (ms/sentence) & \\num{{{self.typo_detection_model_inference_time:.2f}}} \\\\
+                Throughput typo detection (ms/sentence) & \\num{{{self.typo_detection_model_ms_per_sentence:.2f}}} \\\\
                 \\bottomrule
             \\end{{tabular}}
             \\caption{{Performance metrics for the {self.model_name} model.}}
