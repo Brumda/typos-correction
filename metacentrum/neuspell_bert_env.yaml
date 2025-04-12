@@ -5,9 +5,9 @@ channels:
 dependencies:
   - sentencepiece
   - pandas
+  - wandb
   - pip
   - pip:
-      - wandb
       - torch
       - torchaudio
       - torchvision
