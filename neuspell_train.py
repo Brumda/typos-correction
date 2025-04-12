@@ -46,7 +46,7 @@ _DATA = {"run":
 DATA = _DATA["test" if args.program_test else "run"]  # pick between training and program testing
 ##############################################################################
 CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
-wandb.init(project="neuspell"+MODEL[args.model]["wandb_run_name"], name=MODEL[args.model]["wandb_run_name"], resume="allow",
+wandb.init(project="neuspell_"+MODEL[args.model]["wandb_run_name"], name=MODEL[args.model]["wandb_run_name"], resume="allow",
            id=MODEL[args.model]["wandb_run_name"], config={'GPU': gpu_name, })
 ##############################################################################
 checker = MODEL[args.model]["model"]

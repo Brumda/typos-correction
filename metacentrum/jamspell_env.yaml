@@ -9,4 +9,7 @@ dependencies:
   - pandas
   - pip
   - pip:
+      - torch
+      - torchaudio
+      - torchvision
       - jamspell
