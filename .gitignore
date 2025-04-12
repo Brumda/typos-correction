@@ -3,7 +3,7 @@ wandb/
 experiments.ipynb
 autocorrect.py
 wandb_key
-
+pred_typo_models
 
 
 # Byte-compiled / optimized / DLL files
@@ -256,3 +256,4 @@ fabric.properties
 
 # PyPI configuration file
 .pypirc
+/pred_typo_models/
