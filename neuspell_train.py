@@ -52,7 +52,7 @@ wandb.init(project="neuspell", name=MODEL[args.model]["wandb_run_name"], resume=
 checker = MODEL[args.model]["model"]
 
 if args.current_epoch > 1:
-    checker.from_pretrained(os.path.join(CHECKPOINT, f'epoch_{args.current_epoch - 1:02d}'))  # load previous epoch
+    checker.from_pretrained(CHECKPOINT)  # load previous epoch
 else:
     checker.from_pretrained()
     _, prints, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, DATA["test"][0]),
@@ -60,28 +60,24 @@ else:
 
     wandb.log({"test_accuracy": acc})
     with open("results.txt", "a") as f:
-        f.write(f"Evaluation of pretrained ELMO model:\n")
+        f.write(f"Evaluation of pretrained {MODEL[args.model]} model:\n")
         f.write(f"Result:\n{prints}\n")
         f.write(20 * "#" + "\n")
 
-for epoch in range(args.current_epoch, args.train_epochs + args.current_epoch):
-    start_time = time.time()
-    checker.finetune(clean_file=os.path.join(DATA_PATH, DATA["train"][0]),
-                     corrupt_file=os.path.join(DATA_PATH, DATA["train"][1]),
-                     valid_cl_file=os.path.join(DATA_PATH, DATA["valid"][0]),
-                     valid_corr_file=os.path.join(DATA_PATH, DATA["valid"][1]),
-                     n_epochs=1)
-    elapsed_time = time.time() - start_time
+checker.finetune(clean_file=os.path.join(DATA_PATH, DATA["train"][0]),
+                 corrupt_file=os.path.join(DATA_PATH, DATA["train"][1]),
+                 valid_cl_file=os.path.join(DATA_PATH, DATA["valid"][0]),
+                 valid_corr_file=os.path.join(DATA_PATH, DATA["valid"][1]),
+                 n_epochs=args.train_epochs)
 
-    checker.from_pretrained(os.path.join(CHECKPOINT, f'epoch_{epoch:02d}'))
+checker.from_pretrained(CHECKPOINT)
+_, prints, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, DATA["test"][0]),
+                                  corrupt_file=os.path.join(DATA_PATH, DATA["test"][1]))
 
-    _, prints, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, DATA["test"][0]),
-                                      corrupt_file=os.path.join(DATA_PATH, DATA["test"][1]))
-
-    wandb.log({"test_accuracy": acc})
-    with open("results.txt", "a") as f:
-        f.write(f"Evaluation of ELMO model after {epoch} epochs:\n")
-        f.write(f"Result:\n{prints}\n")
-        f.write(20 * "#" + "\n")
+wandb.log({"test_accuracy": acc})
+with open("results.txt", "a") as f:
+    f.write(f"Evaluation of {MODEL[args.model]} model after {args.train_epochs} epochs:\n")
+    f.write(f"Result:\n{prints}\n")
+    f.write(20 * "#" + "\n")
 
 wandb.finish()

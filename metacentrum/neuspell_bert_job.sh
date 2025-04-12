@@ -59,6 +59,6 @@ python neuspell_train.py --train_epochs=10|| { echo >&2 "Python script failed"; 
 cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/../bert_results_$(date '+%Y_%m_%d_%H').txt"
 
 source_file="$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints/subwordbert-probwordnoise/finetuned_model"
-cp -r "$source_file" "$DATADIR/bert_models_$(date '+%Y_%m_%d_%H')" || { echo >&2 "Source file does not exist."; exit 1; }
+cp -r "$source_file" "$DATADIR/../bert_models_$(date '+%Y_%m_%d_%H')" || { echo >&2 "Source file does not exist."; exit 1; }
 
 echo "Task finished at $(date)"
