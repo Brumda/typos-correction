@@ -15,7 +15,8 @@ from helpers import get_data_from_file
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="bert", help="Which model to use")
-parser.add_argument("--finetuned", type=bool, default=False, help="Use finetuned or pretrained model")
+parser.add_argument("--finetuned", action="store_true", help="Use finetuned model")
+
 
 args = parser.parse_args()
 

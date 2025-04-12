@@ -49,7 +49,7 @@ wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
 echo "Starting model benchmarking at $(date)"
-python neuspell_benchmark.py --finetuned=False --model="elmo" || { echo >&2 "Python script failed"; exit 1; }
+python neuspell_benchmark.py --model="elmo" || { echo >&2 "Python script failed"; exit 1; }
 
 cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../elmo_benchmark_results_$(date '+%Y_%m_%d_%H').txt"
 
