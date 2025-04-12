@@ -77,7 +77,7 @@ _, prints, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, DATA["test"
 
 wandb.log({"test_accuracy": acc})
 with open("results.txt", "a") as f:
-    f.write(f"Evaluation of {MODEL[args.model]} model after training:\n")
+    f.write(f"Evaluation of {MODEL[args.model]['wandb_run_name']} model after training:\n")
     f.write(f"Result:\n{prints}\n")
     f.write(20 * "#" + "\n")
 
