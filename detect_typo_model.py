@@ -285,7 +285,10 @@ class TypoDetectionModel:
         """Load the model from a file"""
         if path is None:
             path = self.save_path
-        self.model.load_state_dict(torch.load(path, weights_only=True))
+        try:
+            self.model.load_state_dict(torch.load(path, weights_only=True))
+        except TypeError:
+            self.model.load_state_dict(torch.load(path))
         print(f"Model loaded from {path}")
 
 
