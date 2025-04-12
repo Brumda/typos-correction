@@ -68,7 +68,9 @@ checker.finetune(clean_file=os.path.join(DATA_PATH, DATA["train"][0]),
                  corrupt_file=os.path.join(DATA_PATH, DATA["train"][1]),
                  valid_cl_file=os.path.join(DATA_PATH, DATA["valid"][0]),
                  valid_corr_file=os.path.join(DATA_PATH, DATA["valid"][1]),
-                 n_epochs=args.train_epochs)
+                 n_epochs=args.train_epochs,
+                 use_wandb=True,
+                 )
 
 checker.from_pretrained(CHECKPOINT)
 _, prints, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, DATA["test"][0]),
@@ -76,7 +78,7 @@ _, prints, acc = checker.evaluate(clean_file=os.path.join(DATA_PATH, DATA["test"
 
 wandb.log({"test_accuracy": acc})
 with open("results.txt", "a") as f:
-    f.write(f"Evaluation of {MODEL[args.model]} model after {args.train_epochs} epochs:\n")
+    f.write(f"Evaluation of {MODEL[args.model]} model after training:\n")
     f.write(f"Result:\n{prints}\n")
     f.write(20 * "#" + "\n")
 
