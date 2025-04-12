@@ -1,11 +1,10 @@
 import pandas as pd
 import torch
 import torch.nn as nn
-from sklearn.model_selection import train_test_split
+import wandb
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoModel, AutoTokenizer
 
-import wandb
 from helpers import DATA_PATH
 
 
@@ -219,8 +218,7 @@ class TypoDetectionModel:
                 labels = batch["label"].to(self.device)
 
                 preds = self.model(input_ids, attention_mask)
-                loss = loss_fn(preds, labels)
-                val_loss += loss.item()
+                val_loss += loss_fn(preds, labels).item()
 
                 all_preds.extend(preds.cpu().numpy())
                 all_labels.extend(labels.cpu().numpy())
@@ -228,11 +226,11 @@ class TypoDetectionModel:
         avg_val_loss = val_loss / len(val_loader)
 
         ####################################
-        # Calculate metrics
+        # Calculate MAE
         ####################################
         all_preds_tensor = torch.tensor(all_preds)
         all_labels_tensor = torch.tensor(all_labels)
-        mae = torch.nn.functional.l1_loss(all_preds_tensor, all_labels_tensor).item()
+        mae = nn.functional.l1_loss(all_preds_tensor, all_labels_tensor).item()
 
         return {
                 "val_loss": avg_val_loss,

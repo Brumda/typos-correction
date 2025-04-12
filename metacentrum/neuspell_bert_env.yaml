@@ -5,7 +5,9 @@ channels:
 dependencies:
   - sentencepiece
   - pandas
+  - numpy
   - wandb
+  - scikit-learn
   - pip
   - pip:
       - torch

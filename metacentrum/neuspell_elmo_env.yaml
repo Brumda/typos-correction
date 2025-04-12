@@ -11,6 +11,8 @@ dependencies:
   - pydantic<1.9.0
   - wandb
   - pandas
+  - numpy
+  - scikit-learn
   - sentencepiece
   - pip:
       - allennlp==2.10.1
