@@ -48,7 +48,7 @@ mkdir -p "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_d
 cp -r "$CHECKPOINTS" "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints" || { echo >&2 "Failed to copy checkpoint"; exit 1; }
 
 echo "Starting model benchmarking at $(date)"
-python neuspell_benchmark.py || { echo >&2 "Python script failed"; exit 1; }
+python neuspell_benchmark.py --finetuned=False || { echo >&2 "Python script failed"; exit 1; }
 
 cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../bert_benchmark_results_$(date '+%Y_%m_%d_%H').txt"
 
