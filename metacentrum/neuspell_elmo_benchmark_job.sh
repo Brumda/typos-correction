@@ -51,6 +51,6 @@ echo "Logged in wandb at $(date)"
 echo "Starting model benchmarking at $(date)"
 python neuspell_benchmark.py --model="elmo" || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../elmo_benchmark_results_$(date '+%Y_%m_%d_%H').txt"
+cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/elmo_$(date '+%Y_%m_%d_%H').txt"
 
 echo "Task finished at $(date)"
