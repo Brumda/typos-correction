@@ -31,7 +31,7 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "model":          ElmosclstmChecker(device="cuda") if ElmosclstmChecker else None}, }
 
 wandb.init(project="benchmark_" + MODEL[args.model]["wandb_run_name"],
-           name=MODEL[args.model]["wandb_run_name"] + "-finetuned" if args.finetuned else "-pretrained")
+           name=MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained"))
 
 CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
 checker = MODEL[args.model]["model"]
@@ -46,7 +46,7 @@ benchmark = ModelBenchmark(verbose=True)
 corrupt, clean = get_data_from_file('test')
 warm_up_runs = 2
 num_runs = 5
-name = MODEL[args.model]["wandb_run_name"] + "-finetuned" if args.finetuned else "-pretrained"
+name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained")
 res = benchmark.benchmark_model(checker,
                                 corrupt,
                                 clean,
