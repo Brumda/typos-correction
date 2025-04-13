@@ -219,6 +219,7 @@ class ModelBenchmark:
             inference_time = 0
             inference_time_typo_detect = 0
             ram_usage = 0
+            skipped = 0
             corr2corr, corr2incorr, incorr2corr, incorr2incorr = 0, 0, 0, 0
 
             with self._measure_memory():
@@ -236,6 +237,7 @@ class ModelBenchmark:
                         inference_time += time.time() - start_time
                         ram_usage += self._get_ram_usage() - ram_before
                     else:
+                        skipped += 1
                         prediction = corrupt
                     # statistics
                     acc_sen += prediction == clean
@@ -253,6 +255,7 @@ class ModelBenchmark:
                 ####################################
                 # bare token statistics
                 ####################################
+                if self.verbose: print(f"corr2corr: {corr2corr}, corr2incorr: {corr2incorr}, incorr2corr: {incorr2corr}, incorr2incorr: {incorr2incorr}\nskipped: {skipped}")
                 total_tokens = corr2corr + corr2incorr + incorr2corr + incorr2incorr
                 token_correction.append((corr2corr, corr2incorr, incorr2corr, incorr2incorr))
                 accuracies_tokens.append((corr2corr + incorr2corr) / total_tokens)

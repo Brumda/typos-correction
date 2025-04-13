@@ -6,6 +6,8 @@ from neuspell import BertChecker
 # cant import unless specifically set up
 try:
     from neuspell import ElmosclstmChecker
+
+    print("Elmo imported")
 except ImportError:
     ElmosclstmChecker = None
 
@@ -16,7 +18,6 @@ from helpers import get_data_from_file
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="bert", help="Which model to use")
 parser.add_argument("--finetuned", action="store_true", help="Use finetuned model")
-
 
 args = parser.parse_args()
 
@@ -29,8 +30,8 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "wandb_run_name": "elmo-checker",
                   "model":          ElmosclstmChecker(device="cuda") if ElmosclstmChecker else None}, }
 
-wandb.init(project="benchmark_" + MODEL[args.model]["wandb_run_name"], name=MODEL[args.model]["wandb_run_name"],
-           config={'GPU': gpu_name, })
+wandb.init(project="benchmark_" + MODEL[args.model]["wandb_run_name"],
+           name=MODEL[args.model]["wandb_run_name"] + "-finetuned" if args.finetuned else "-pretrained")
 
 CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
 checker = MODEL[args.model]["model"]
@@ -40,7 +41,7 @@ if args.finetuned:
 else:
     checker.from_pretrained()
 
-benchmark = ModelBenchmark()
+benchmark = ModelBenchmark(verbose=True)
 
 corrupt, clean = get_data_from_file('test')
 warm_up_runs = 2
