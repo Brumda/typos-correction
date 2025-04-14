@@ -45,14 +45,14 @@ echo "Environment created at $(date)"
 wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
-mkdir -p "$SCRATCHDIR/$PROJECT_NAME/pred_typo_models" || { echo >&2 "Failed to create models directory"; exit 1; }
+mkdir -p "$SCRATCHDIR/$PROJECT_NAME/detect_typo_models" || { echo >&2 "Failed to create models directory"; exit 1; }
 
 echo "Starting model execution at $(date)"
 python detect_typo_model.py || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/typo_detect_result.txt" "$DATADIR/../detect_typo/result_$(date '+%Y_%m_%d_%H').txt"
+cp "$SCRATCHDIR/$PROJECT_NAME/detect_typo_result.txt" "$DATADIR/../detect_typo/result_$(date '+%Y_%m_%d_%H').txt"
 
-source_file="$SCRATCHDIR/$PROJECT_NAME/pred_typo_models"
+source_file="$SCRATCHDIR/$PROJECT_NAME/detect_typo_models"
 cp -r "$source_file" "$DATADIR/../detect_typo/models_$(date '+%Y_%m_%d_%H')" || { echo >&2 "Source file does not exist."; exit 1; }
 
 echo "Task finished at $(date)"

@@ -5,10 +5,10 @@ channels:
 dependencies:
   - pandas
   - numpy
+  - wandb
   - scikit-learn
   - pip
   - pip:
-      - wandb
       - torch
       - torchaudio
       - torchvision

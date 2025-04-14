@@ -294,6 +294,6 @@ if __name__ == "__main__":
     train_df, dev_df, test_df = typo_model.load_data()
     typo_model.train(train_df, dev_df, epochs=20)
     metrics = typo_model.evaluate(test_df)
-    with open("typo_detect_result.txt", "w") as f:
+    with open("detect_typo_result.txt", "w") as f:
         for key, value in metrics.items():
             f.write(f"{key}: '{value}'\n")
