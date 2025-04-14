@@ -111,6 +111,7 @@ class TypoDetectionModel:
         def _save_checkpoint(self, dev_loss, model):
             print(f"Dev loss decreased ({self.best_score:.6f} --> {dev_loss:.6f}). Saving model...")
             torch.save(model.state_dict(), self.path)
+            print(f"Model saved to {self.path}")
 
     def train(self, train_df, dev_df, epochs=10, learning_rate=1e-5, patience=3, delta=0.001, use_wandb=True):
         """Train the model with early stopping"""
@@ -197,10 +198,6 @@ class TypoDetectionModel:
                 print("Early stopping triggered")
                 break
 
-        ####################################
-        # Load the best model
-        ####################################
-        self.load_model()
         if use_wandb:
             wandb.finish()
 
@@ -274,13 +271,6 @@ class TypoDetectionModel:
 
         return prob.item()
 
-    def save_model(self, path=None):
-        """Save the model to a file"""
-        if path is None:
-            path = self.save_path
-        torch.save(self.model.state_dict(), path)
-        print(f"Model saved to {path}")
-
     def load_model(self, path=None):
         """Load the model from a file"""
         if path is None:
@@ -293,6 +283,8 @@ if __name__ == "__main__":
     typo_model = TypoDetectionModel()
     train_df, dev_df, test_df = typo_model.load_data()
     typo_model.train(train_df, dev_df, epochs=20)
+    # Load the best model for test evaluation
+    typo_model.load_model()
     metrics = typo_model.evaluate(test_df)
     with open("detect_typo_result.txt", "w") as f:
         for key, value in metrics.items():
