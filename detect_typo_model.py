@@ -125,7 +125,7 @@ class TypoDetectionModel:
         train_ds = self._SentenceDataset(train_df, self.tokenizer, self.max_len)
         dev_ds = self._SentenceDataset(dev_df, self.tokenizer, self.max_len)
 
-        train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
+        train_loader = DataLoader(train_ds, batch_size=self.batch_size)
         dev_loader = DataLoader(dev_ds, batch_size=self.batch_size)
 
         ####################################
@@ -287,7 +287,7 @@ class TypoDetectionModel:
                 self.model.load_state_dict(torch.load(path, strict=False))
                 print("Model loaded successfully with strict=False")
             except Exception as e2:
-                print(f"Model couldn't be loaded: {e2}")
+                print(f"Model couldn't be loaded: {e}\n{e2}")
         print(f"Model loaded from {path}")
 
 
