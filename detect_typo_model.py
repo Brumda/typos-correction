@@ -103,10 +103,11 @@ class TypoDetectionModel:
                 print(f"EarlyStopping counter: {self.counter} out of {self.patience}")
                 if self.counter >= self.patience:
                     self.early_stop = True
-            else:  # Improvement
-                self._save_checkpoint(dev_loss, model)
-                self.best_score = dev_loss
+            else:  # Could be worse
                 self.counter = 0
+                if self.best_score > dev_loss: # actual improvement
+                    self._save_checkpoint(dev_loss, model)
+                    self.best_score = dev_loss
 
         def _save_checkpoint(self, dev_loss, model):
             print(f"Dev loss decreased ({self.best_score:.6f} --> {dev_loss:.6f}). Saving model...")
