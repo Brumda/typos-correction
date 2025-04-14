@@ -45,6 +45,8 @@ class BenchmarkResult:
 
     typo_detection_model_inference_time: float
     typo_detection_model_ms_per_sentence: float
+    skipped: int
+    should_skip: int
 
     def __str__(self):
         return (f"Benchmark results:\n"
@@ -69,7 +71,11 @@ class BenchmarkResult:
                 f"   Token Correction Rate: {self.token_correction_rate:.2%}\n"
                 f"   Token Incorrection Rate: {self.token_incorrection_rate:.2%}\n"
                 f"   Inference Time typo detection: {self.typo_detection_model_inference_time:.2f} s\n"
-                f"   Throughput typo detection: {self.typo_detection_model_ms_per_sentence:.2f} ms/sentence\n")
+                f"   Throughput typo detection: {self.typo_detection_model_ms_per_sentence:.2f} ms/sentence\n"
+                f"   Skipped sentences: {self.skipped}\n"
+                f"   Should have skipped sentences: {self.should_skip}\n"
+                f"   Skip acc: {self.should_skip/self.skipped:.2f}\n"
+                )
 
     def __repr__(self):
         return self.__str__()
@@ -91,8 +97,6 @@ class BenchmarkResult:
                 Throughput (sentences/sec) & \\num{{{self.throughput_sentences:.2f}}} \\\\
                 Throughput (ms/sentence) & \\num{{{self.ms_per_sentence:.2f}}} \\\\
                 Throughput (tokens/sec) & \\num{{{self.throughput_tokens:.2f}}} \\\\
-                Total Inference Time typo detection& \\num{{{self.typo_detection_model_inference_time:.2f}}} s \\\\
-                Throughput typo detection (ms/sentence) & \\num{{{self.typo_detection_model_ms_per_sentence:.2f}}} \\\\
                 \\bottomrule
             \\end{{tabular}}
             \\caption{{Performance metrics for the {self.model_name} model.}}
@@ -128,7 +132,7 @@ class BenchmarkResult:
 
 
 class ModelBenchmark:
-    def __init__(self, path: str = "pred_typo_models/best_model.pt", device: str = 'cuda', verbose: bool = False):
+    def __init__(self, path: str = "detect_typo_models/best_model.pt", device: str = 'cuda', verbose: bool = False):
         self.device = device
         self.peak_ram = 0
         self.verbose = verbose
@@ -139,10 +143,6 @@ class ModelBenchmark:
     @contextmanager
     def _measure_memory(self):
         ram_start = self._get_ram_usage()
-
-        if self.device == 'cuda':
-            torch.cuda.reset_peak_memory_stats()
-
         try:
             yield
         finally:
@@ -220,17 +220,19 @@ class ModelBenchmark:
             inference_time_typo_detect = 0
             ram_usage = 0
             skipped = 0
+            should_skip = 0
             corr2corr, corr2incorr, incorr2corr, incorr2incorr = 0, 0, 0, 0
 
             with self._measure_memory():
                 # for corrupt, clean in tqdm(zip(corrupt_texts, clean_texts)):
                 for corrupt, clean in zip(corrupt_texts, clean_texts):
-                    # prediction
+                    # decide if sentence should be fixed or if it's not a typo
                     start_time_detect = time.time()
                     typo_prob = self.predict_typo.predict(corrupt)
                     inference_time_typo_detect += time.time() - start_time_detect
 
                     if typo_prob > 0.5:
+                        # prediction
                         ram_before = self._get_ram_usage()
                         start_time = time.time()
                         prediction = predict(model, corrupt)
@@ -238,9 +240,11 @@ class ModelBenchmark:
                         ram_usage += self._get_ram_usage() - ram_before
                     else:
                         skipped += 1
-                        prediction = corrupt
+                        # approximation
+                        should_skip += (len(corrupt) == len(clean))
+                        continue
                     # statistics
-                    acc_sen += prediction == clean
+                    acc_sen += (prediction == clean)
                     for corrupt_token, clean_token, predict_token in zip(corrupt.split(), clean.split(),
                                                                          prediction.split()):
                         if corrupt_token == clean_token and predict_token == clean_token:
@@ -255,7 +259,11 @@ class ModelBenchmark:
                 ####################################
                 # bare token statistics
                 ####################################
-                if self.verbose: print(f"corr2corr: {corr2corr}, corr2incorr: {corr2incorr}, incorr2corr: {incorr2corr}, incorr2incorr: {incorr2incorr}\nskipped: {skipped}")
+                if self.verbose: print(
+                        f"corr2corr: {corr2corr}, corr2incorr: {corr2incorr}, incorr2corr: {incorr2corr},"
+                        f" incorr2incorr: {incorr2incorr}\n"
+                        f"skipped: {skipped} should skip: {should_skip}")
+
                 total_tokens = corr2corr + corr2incorr + incorr2corr + incorr2incorr
                 token_correction.append((corr2corr, corr2incorr, incorr2corr, incorr2incorr))
                 accuracies_tokens.append((corr2corr + incorr2corr) / total_tokens)
@@ -268,14 +276,14 @@ class ModelBenchmark:
                 precisions.append(incorr2corr / (incorr2corr + corr2incorr))
                 recalls.append(incorr2corr / (incorr2corr + incorr2incorr))
                 f05s.append((1.25 * precisions[-1] * recalls[-1]) / (0.25 * precisions[-1] + recalls[-1]))
-                accuracies_sentences.append(acc_sen / len(clean_texts))
+                accuracies_sentences.append(acc_sen / (len(clean_texts) - skipped))
 
                 ####################################
                 # time based statistics
                 ####################################
                 throughputs_tokens.append(total_tokens / inference_time)
-                throughputs_sentences.append(len(corrupt_texts) / inference_time)
-                ms_per_sentences.append((inference_time / len(clean_texts)) * 1000)
+                throughputs_sentences.append((len(clean_texts) - skipped) / inference_time)
+                ms_per_sentences.append((inference_time / (len(clean_texts) - skipped)) * 1000)
                 inference_times.append(inference_time)
 
                 # typo detection model
@@ -313,4 +321,6 @@ class ModelBenchmark:
                                peak_ram_memory_mb=self.peak_ram,
                                typo_detection_model_inference_time=np.mean(inference_times_typo_detect),
                                typo_detection_model_ms_per_sentence=np.mean(ms_per_sentences_typo_detect),
+                               skipped=skipped,
+                               should_skip=should_skip
                                )

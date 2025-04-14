@@ -1,6 +1,5 @@
 import argparse
 
-import torch
 from neuspell import BertChecker
 
 # cant import unless specifically set up
@@ -21,8 +20,6 @@ parser.add_argument("--finetuned", action="store_true", help="Use finetuned mode
 
 args = parser.parse_args()
 
-gpu_name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
-
 MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "wandb_run_name": "bert-checker",
                   "model":          BertChecker(device="cuda"), },
@@ -30,8 +27,8 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "wandb_run_name": "elmo-checker",
                   "model":          ElmosclstmChecker(device="cuda") if ElmosclstmChecker else None}, }
 
-wandb.init(project="benchmark_" + MODEL[args.model]["wandb_run_name"],
-           name=MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained"))
+name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained")
+wandb.init(project="Benchmarks", name=name, id=name)
 
 CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
 checker = MODEL[args.model]["model"]
@@ -41,12 +38,12 @@ if args.finetuned:
 else:
     checker.from_pretrained()
 
-benchmark = ModelBenchmark(verbose=True)
-
 corrupt, clean = get_data_from_file('test')
 warm_up_runs = 2
 num_runs = 5
 name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained")
+
+benchmark = ModelBenchmark(verbose=True)
 res = benchmark.benchmark_model(checker,
                                 corrupt,
                                 clean,

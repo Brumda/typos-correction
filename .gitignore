@@ -3,7 +3,7 @@ wandb/
 experiments.ipynb
 autocorrect.py
 wandb_key
-pred_typo_models
+detect_typo_models
 
 
 # Byte-compiled / optimized / DLL files

@@ -1,20 +1,19 @@
 import jamspell
-
 import wandb
+
 from benchmark import ModelBenchmark
 from helpers import get_data_from_file
 
-wandb.init(project="Benchmarks", name="jamspell",
-           config={'GPU': 'CPU'})
+wandb.init(project="Benchmarks", name="jamspell", id="jamspell")
 
 corrector = jamspell.TSpellCorrector()
 corrector.LoadLangModel('en.bin')
 
-benchmark = ModelBenchmark(device='cpu')
-
 corrupt, clean = get_data_from_file('test')
 warm_up_runs = 2
 num_runs = 5
+
+benchmark = ModelBenchmark(device='cpu', verbose=True)
 res = benchmark.benchmark_model(corrector,
                                 corrupt,
                                 clean,
