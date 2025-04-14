@@ -276,7 +276,18 @@ class TypoDetectionModel:
         """Load the model from a file"""
         if path is None:
             path = self.save_path
-            self.model.load_state_dict(torch.load(path, strict=False))
+
+        try:
+            # First attempt - with default parameters
+            self.model.load_state_dict(torch.load(path))
+            print("Model loaded successfully")
+        except Exception as e:
+            try:
+                # Second attempt - with strict=False (Elmo model's torch version)
+                self.model.load_state_dict(torch.load(path, strict=False))
+                print("Model loaded successfully with strict=False")
+            except Exception as e2:
+                print(f"Model couldn't be loaded: {e2}")
         print(f"Model loaded from {path}")
 
 
