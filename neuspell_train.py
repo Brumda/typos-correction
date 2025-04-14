@@ -34,11 +34,11 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
 
 _DATA = {"run":
              {"train": ["train_clean.txt", "train_corrupt.txt"],
-              "valid": ["validation_clean.txt", "validation_corrupt.txt"],
+              "dev": ["dev_clean.txt", "dev_corrupt.txt"],
               "test":  ["test_clean.txt", "test_corrupt.txt"]},
          "test":
              {"train": ["small_clean.txt", "small_corrupt.txt"],
-              "valid": [None, None],
+              "dev": [None, None],
               "test":  ["small_clean.txt", "small_corrupt.txt"]}}
 
 DATA = _DATA["test" if args.program_test else "run"]  # pick between training and program testing
@@ -63,8 +63,8 @@ else:
 
 checker.finetune(clean_file=os.path.join(DATA_PATH, DATA["train"][0]),
                  corrupt_file=os.path.join(DATA_PATH, DATA["train"][1]),
-                 valid_cl_file=os.path.join(DATA_PATH, DATA["valid"][0]),
-                 valid_corr_file=os.path.join(DATA_PATH, DATA["valid"][1]),
+                 dev_cl_file=os.path.join(DATA_PATH, DATA["dev"][0]),
+                 dev_corr_file=os.path.join(DATA_PATH, DATA["dev"][1]),
                  n_epochs=args.train_epochs,
                  use_wandb=True,
                  )

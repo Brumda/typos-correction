@@ -12,8 +12,8 @@ class TypoDetectionModel:
     def __init__(self,
                  model_name="nreimers/MiniLM-L6-H384-uncased",
                  batch_size=32,
-                 max_len=128,
-                 save_path="pred_typo_models/best_model.pt",
+                 max_len=96,
+                 save_path="detect_typo_models/best_model.pt",
                  wandb_project="typo-detection-probability",
                  wandb_run_name="minilm-typo-detection"
                  ):
@@ -56,14 +56,14 @@ class TypoDetectionModel:
     def load_data(self):
         """Load and prepare the dataset"""
         train_df = pd.read_csv(DATA_PATH + "train_prob_df.csv", dtype={0: str, 1: float})
-        val_df = pd.read_csv(DATA_PATH + "val_prob_df.csv", dtype={0: str, 1: float})
+        dev_df = pd.read_csv(DATA_PATH + "dev_prob_df.csv", dtype={0: str, 1: float})
         test_df = pd.read_csv(DATA_PATH + "test_prob_df.csv", dtype={0: str, 1: float})
-        return train_df, val_df, test_df
+        return train_df, dev_df, test_df
 
     class _SentenceDataset(Dataset):
         """Dataset with tokenization"""
 
-        def __init__(self, df, tokenizer, max_len=128):
+        def __init__(self, df, tokenizer, max_len=96):
             self.sentences = df["text"].tolist()
             self.labels = df["prob"].values.astype("float32")
             self.tokenizer = tokenizer
@@ -94,25 +94,25 @@ class TypoDetectionModel:
             self.best_score = None
             self.early_stop = False
 
-        def __call__(self, val_loss, model):
+        def __call__(self, dev_loss, model):
             if self.best_score is None:
-                self.best_score = val_loss
-                self._save_checkpoint(val_loss, model)
-            elif val_loss > self.best_score + self.delta:  # No improvement
+                self.best_score = dev_loss
+                self._save_checkpoint(dev_loss, model)
+            elif dev_loss > self.best_score + self.delta:  # No improvement
                 self.counter += 1
                 print(f"EarlyStopping counter: {self.counter} out of {self.patience}")
                 if self.counter >= self.patience:
                     self.early_stop = True
             else:  # Improvement
-                self._save_checkpoint(val_loss, model)
-                self.best_score = val_loss
+                self._save_checkpoint(dev_loss, model)
+                self.best_score = dev_loss
                 self.counter = 0
 
-        def _save_checkpoint(self, val_loss, model):
-            print(f"Validation loss decreased ({self.best_score:.6f} --> {val_loss:.6f}). Saving model...")
+        def _save_checkpoint(self, dev_loss, model):
+            print(f"Dev loss decreased ({self.best_score:.6f} --> {dev_loss:.6f}). Saving model...")
             torch.save(model.state_dict(), self.path)
 
-    def train(self, train_df, val_df, epochs=10, learning_rate=1e-5, patience=3, delta=0.001, use_wandb=True):
+    def train(self, train_df, dev_df, epochs=10, learning_rate=1e-5, patience=3, delta=0.001, use_wandb=True):
         """Train the model with early stopping"""
         if use_wandb:
             wandb.init(project=self.wandb_project, name=self.wandb_run_name)
@@ -121,10 +121,10 @@ class TypoDetectionModel:
         # Data initialization
         ####################################
         train_ds = self._SentenceDataset(train_df, self.tokenizer, self.max_len)
-        val_ds = self._SentenceDataset(val_df, self.tokenizer, self.max_len)
+        dev_ds = self._SentenceDataset(dev_df, self.tokenizer, self.max_len)
 
         train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
-        val_loader = DataLoader(val_ds, batch_size=self.batch_size)
+        dev_loader = DataLoader(dev_ds, batch_size=self.batch_size)
 
         ####################################
         # optimizer and loss function
@@ -169,9 +169,9 @@ class TypoDetectionModel:
             ####################################
             # Validation phase
             ####################################
-            val_metrics = self._validate(val_loader, loss_fn)
-            avg_val_loss = val_metrics["val_loss"]
-            mae = val_metrics["mae"]
+            dev_metrics = self._validate(dev_loader, loss_fn)
+            avg_dev_loss = dev_metrics["dev_loss"]
+            mae = dev_metrics["mae"]
 
             ####################################
             # Log metrics
@@ -179,20 +179,20 @@ class TypoDetectionModel:
             metrics = {
                     "epoch":      epoch + 1,
                     "train_loss": avg_train_loss,
-                    "val_loss":   avg_val_loss,
-                    "val_mae":    mae
+                    "dev_loss":   avg_dev_loss,
+                    "dev_mae":    mae
             }
 
             if use_wandb:
                 wandb.log(metrics)
 
             print(
-                    f"[Epoch {epoch + 1}] Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | MAE: {mae:.4f}")
+                    f"[Epoch {epoch + 1}] Train Loss: {avg_train_loss:.4f} | Dev Loss: {avg_dev_loss:.4f} | MAE: {mae:.4f}")
 
             ####################################
             # Check early stopping
             ####################################
-            early_stopping(avg_val_loss, self.model)
+            early_stopping(avg_dev_loss, self.model)
             if early_stopping.early_stop:
                 print("Early stopping triggered")
                 break
@@ -204,26 +204,26 @@ class TypoDetectionModel:
         if use_wandb:
             wandb.finish()
 
-    def _validate(self, val_loader, loss_fn):
+    def _validate(self, dev_loader, loss_fn):
         """Validate the model and return metrics"""
         self.model.eval()
-        val_loss = 0
+        dev_loss = 0
         all_preds = []
         all_labels = []
 
         with torch.no_grad():
-            for batch in val_loader:
+            for batch in dev_loader:
                 input_ids = batch["input_ids"].to(self.device)
                 attention_mask = batch["attention_mask"].to(self.device)
                 labels = batch["label"].to(self.device)
 
                 preds = self.model(input_ids, attention_mask)
-                val_loss += loss_fn(preds, labels).item()
+                dev_loss += loss_fn(preds, labels).item()
 
                 all_preds.extend(preds.cpu().numpy())
                 all_labels.extend(labels.cpu().numpy())
 
-        avg_val_loss = val_loss / len(val_loader)
+        avg_dev_loss = dev_loss / len(dev_loader)
 
         ####################################
         # Calculate MAE
@@ -233,7 +233,7 @@ class TypoDetectionModel:
         mae = nn.functional.l1_loss(all_preds_tensor, all_labels_tensor).item()
 
         return {
-                "val_loss": avg_val_loss,
+                "dev_loss": avg_dev_loss,
                 "mae":      mae
         }
 
@@ -245,7 +245,7 @@ class TypoDetectionModel:
         loss_fn = nn.MSELoss()
         metrics = self._validate(test_loader, loss_fn)
 
-        print(f"Test Loss: {metrics['val_loss']:.4f} | Test MAE: {metrics['mae']:.4f}")
+        print(f"Test Loss: {metrics['dev_loss']:.4f} | Test MAE: {metrics['mae']:.4f}")
         return metrics
 
     def predict(self, sentence):
@@ -291,8 +291,8 @@ class TypoDetectionModel:
 
 if __name__ == "__main__":
     typo_model = TypoDetectionModel()
-    train_df, val_df, test_df = typo_model.load_data()
-    typo_model.train(train_df, val_df, epochs=20)
+    train_df, dev_df, test_df = typo_model.load_data()
+    typo_model.train(train_df, dev_df, epochs=20)
     metrics = typo_model.evaluate(test_df)
     with open("typo_detect_result.txt", "w") as f:
         for key, value in metrics.items():
