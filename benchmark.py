@@ -293,7 +293,7 @@ class ModelBenchmark:
                 ####################################
                 # memory based statistics
                 ####################################
-                ram_usages.append(ram_usage / total_tokens)
+                ram_usages.append(ram_usage / (len(clean_texts) - skipped))
                 gpu_memory_usages.append(self._get_gpu_memory())
 
             if self.verbose: print(f"Finished {run + 1}/{num_runs} iteration in {inference_time} seconds.")
