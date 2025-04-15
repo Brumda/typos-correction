@@ -4,7 +4,7 @@ import wandb
 from benchmark import ModelBenchmark
 from helpers import get_data_from_file
 
-wandb.init(project="Benchmarks", name="jamspell", id="jamspell")
+wandb.init(project="Benchmark_j", name="jamspell", id="jamspell")
 
 corrector = jamspell.TSpellCorrector()
 corrector.LoadLangModel('en.bin')
