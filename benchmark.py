@@ -240,7 +240,7 @@ class ModelBenchmark:
                         ram_usage += self._get_ram_usage() - ram_before
                     else:
                         skipped += 1
-                        # approximation
+                        # Big approximation
                         should_skip += (len(corrupt) == len(clean))
                         continue
                     # statistics
