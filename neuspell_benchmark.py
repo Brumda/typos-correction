@@ -29,7 +29,7 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "model":          ElmosclstmChecker(device="cuda") if ElmosclstmChecker else None}, }
 
 name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained") + (
-    "-w/o space correction" if args.no_fix_spaces else "")
+    "-wo space correction" if args.no_fix_spaces else "")
 
 wandb.init(project="Benchmarks", name=name, id=name)
 
