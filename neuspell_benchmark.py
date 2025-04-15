@@ -17,6 +17,7 @@ from helpers import get_data_from_file
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="bert", help="Which model to use")
 parser.add_argument("--finetuned", action="store_true", help="Use finetuned model")
+parser.add_argument("--no_fix_spaces", action="store_true", help="Don't use fix spaces workaround for BERT")
 
 args = parser.parse_args()
 
@@ -27,7 +28,9 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "wandb_run_name": "elmo-checker",
                   "model":          ElmosclstmChecker(device="cuda") if ElmosclstmChecker else None}, }
 
-name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained")
+name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained") + (
+    "-w/o space correction" if args.no_fix_spaces else "")
+
 wandb.init(project="Benchmarks", name=name, id=name)
 
 CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
@@ -41,9 +44,12 @@ else:
 corrupt, clean = get_data_from_file('test')
 warm_up_runs = 2
 num_runs = 5
-name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained")
 
 benchmark = ModelBenchmark(verbose=True)
+if args.model == "bert" and args.no_fix_spaces:
+    pred_func = lambda model, data: model.correct_string(data, correct_spaces=False)
+else:
+    pred_func = lambda model, data: model.correct_string(data)
 res = benchmark.benchmark_model(checker,
                                 corrupt,
                                 clean,
