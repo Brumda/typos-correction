@@ -60,6 +60,6 @@ time=$(date '+%Y_%m_%d_%H')
 source_file="$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-packages/neuspell_data/checkpoints/subwordbert-probwordnoise/finetuned_model"
 cp -r "$source_file" "$DATADIR/../models/bert_$time" || { echo >&2 "Source file does not exist."; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/../models/bert_$time/result.txt"
+cp "$SCRATCHDIR/$PROJECT_NAME/results.txt" "$DATADIR/../models/bert_$time/result.txt"  || { echo >&2 "Failed to results"; exit 1; }
 
 echo "Task finished at $(date)"
