@@ -45,8 +45,7 @@ class BenchmarkResult:
 
     typo_detection_model_inference_time: float
     typo_detection_model_ms_per_sentence: float
-    skipped: int
-    should_skip: int
+    skipped: float
 
     def __str__(self):
         return (f"Benchmark results:\n"
@@ -72,9 +71,7 @@ class BenchmarkResult:
                 f"   Token Incorrection Rate: {self.token_incorrection_rate:.2%}\n"
                 f"   Inference Time typo detection: {self.typo_detection_model_inference_time:.2f} s\n"
                 f"   Throughput typo detection: {self.typo_detection_model_ms_per_sentence:.2f} ms/sentence\n"
-                f"   Skipped sentences: {self.skipped}\n"
-                f"   Should have skipped sentences: {self.should_skip}\n"
-                f"   Skip acc: {self.should_skip/self.skipped:.2f}\n"
+                f"   Skipped sentences: {self.skipped:.2f}\n"
                 )
 
     def __repr__(self):
@@ -195,7 +192,6 @@ class ModelBenchmark:
         if self.verbose: print(f"Finished warm-up after {time.time() - start} seconds.")
 
         inference_times = []
-        inference_times_typo_detect = []
         throughputs_tokens = []
         throughputs_sentences = []
         ram_usages = []
@@ -210,6 +206,8 @@ class ModelBenchmark:
         f05s = []
         ms_per_sentences = []
         ms_per_sentences_typo_detect = []
+        inference_times_typo_detect = []
+        skipped = 0
 
         if self.verbose: print(f"Starting benchmark iterations...")
         # for run in tqdm(range(num_runs)):
@@ -219,7 +217,6 @@ class ModelBenchmark:
             inference_time = 0
             inference_time_typo_detect = 0
             ram_usage = 0
-            skipped = 0
             should_skip = 0
             corr2corr, corr2incorr, incorr2corr, incorr2incorr = 0, 0, 0, 0
 
@@ -240,8 +237,6 @@ class ModelBenchmark:
                         ram_usage += self._get_ram_usage() - ram_before
                     else:
                         skipped += 1
-                        # Big approximation
-                        should_skip += (len(corrupt) == len(clean))
                         continue
                     # statistics
                     acc_sen += (prediction == clean)
@@ -321,6 +316,5 @@ class ModelBenchmark:
                                peak_ram_memory_mb=self.peak_ram,
                                typo_detection_model_inference_time=np.mean(inference_times_typo_detect),
                                typo_detection_model_ms_per_sentence=np.mean(ms_per_sentences_typo_detect),
-                               skipped=skipped,
-                               should_skip=should_skip
+                               skipped=skipped/num_runs,
                                )
