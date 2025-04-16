@@ -50,6 +50,6 @@ cp -r "$CHECKPOINTS" "$SCRATCHDIR/tmp_env/lib/python$PYTHON_VERSION/site-package
 echo "Starting model benchmarking at $(date)"
 python neuspell_benchmark.py --no_fix_spaces || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/bert_w/o_space_correction$(date '+%Y_%m_%d_%H').txt"
+cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/bert_wo_space_correction$(date '+%Y_%m_%d_%H').txt"
 
 echo "Task finished at $(date)"
