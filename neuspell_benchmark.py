@@ -54,7 +54,7 @@ res = benchmark.benchmark_model(checker,
                                 corrupt,
                                 clean,
                                 name,
-                                lambda model, data: model.correct_string(data),
+                                pred_func,
                                 warm_up_runs=warm_up_runs,
                                 num_runs=num_runs)
 wandb.log(res.__dict__)
