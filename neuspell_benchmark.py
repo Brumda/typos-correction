@@ -31,7 +31,7 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
 name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained") + (
     "-wo space correction" if args.no_fix_spaces else "")
 
-wandb.init(project="Benchmarks", name=name, id=name)
+run = wandb.init(project="Benchmarks", name=name)
 
 CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
 checker = MODEL[args.model]["model"]
@@ -57,7 +57,7 @@ res = benchmark.benchmark_model(checker,
                                 pred_func,
                                 warm_up_runs=warm_up_runs,
                                 num_runs=num_runs)
-wandb.log(res.__dict__)
+run.log(res.__dict__)
 
 with open("benchmark_results.txt", "w", encoding="utf-8") as f:
     f.write(name + " benchmark results:\n")
@@ -65,4 +65,4 @@ with open("benchmark_results.txt", "w", encoding="utf-8") as f:
     f.write(f"{res.create_tex_table_perf_metrics()}\n")
     f.write(f"{res.create_tex_table_corr_metrics()}\n")
 
-wandb.finish()
+run.finish()

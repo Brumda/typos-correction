@@ -4,7 +4,7 @@ import wandb
 from benchmark import ModelBenchmark
 from helpers import get_data_from_file
 
-wandb.init(project="Benchmark_j", name="jamspell", id="jamspell")
+run = wandb.init(project="Benchmark", name="jamspell")
 
 corrector = jamspell.TSpellCorrector()
 corrector.LoadLangModel('en.bin')
@@ -21,11 +21,11 @@ res = benchmark.benchmark_model(corrector,
                                 lambda model, data: model.FixFragment(data),
                                 warm_up_runs=warm_up_runs,
                                 num_runs=num_runs)
-wandb.log(res.__dict__)
+run.log(res.__dict__)
 with open("benchmark_results.txt", "w", encoding="utf-8") as f:
     f.write("Jamspell benchmark results:\n")
     f.write(f"{res}\n")
     f.write(f"{res.create_tex_table_perf_metrics()}\n")
     f.write(f"{res.create_tex_table_corr_metrics()}\n")
 
-wandb.finish()
+run.finish()
