@@ -29,9 +29,9 @@ class BenchmarkResult:
     peak_ram_memory_mb: float
     gpu_memory_mb: float
     throughput_sentences: float
-    throughput_tokens: float
+    throughput_words: float
     ms_per_sentence: float
-    accuracy_tokens: float
+    accuracy_words: float
     accuracy_sentences: float
     corr2corr: float
     corr2incorr: float
@@ -40,8 +40,8 @@ class BenchmarkResult:
     recall: float
     precision: float
     f05: float
-    token_correction_rate: float
-    token_incorrection_rate: float  # for lack of a better name
+    word_correction_rate: float
+    word_incorrection_rate: float  # for lack of a better name
 
     typo_detection_model_inference_time: float
     typo_detection_model_ms_per_sentence: float
@@ -57,9 +57,9 @@ class BenchmarkResult:
                 f"   Peak RAM Memory: {self.peak_ram_memory_mb:.2f} MB\n"
                 f"   Throughput: {self.throughput_sentences:.2f} sentences/sec\n"
                 f"   Throughput: {self.ms_per_sentence:.2f} ms/sentence\n"
-                f"   Throughput: {self.throughput_tokens:.2f} tokens/sec\n"
+                f"   Throughput: {self.throughput_words:.2f} words/sec\n"
                 f"   Accuracy sentences: {self.accuracy_sentences:.2%}\n"
-                f"   Accuracy tokens: {self.accuracy_tokens:.2%}\n"
+                f"   Accuracy words: {self.accuracy_words:.2%}\n"
                 f"   Correct → Correct: {self.corr2corr}\n"
                 f"   Correct → Incorrect: {self.corr2incorr}\n"
                 f"   Incorrect → Correct: {self.incorr2corr}\n"
@@ -67,8 +67,8 @@ class BenchmarkResult:
                 f"   Recall: {self.recall:.2%}\n"
                 f"   Precision: {self.precision:.2%}\n"
                 f"   F0.5: {self.f05:.2%}\n"
-                f"   Token Correction Rate: {self.token_correction_rate:.2%}\n"
-                f"   Token Incorrection Rate: {self.token_incorrection_rate:.2%}\n"
+                f"   Word Correction Rate: {self.word_correction_rate:.2%}\n"
+                f"   Word Incorrection Rate: {self.word_incorrection_rate:.2%}\n"
                 f"   Inference Time typo detection: {self.typo_detection_model_inference_time:.2f} s\n"
                 f"   Throughput typo detection: {self.typo_detection_model_ms_per_sentence:.2f} ms/sentence\n"
                 f"   Skipped sentences: {self.skipped:.2f}\n"
@@ -93,7 +93,7 @@ class BenchmarkResult:
                 Total Inference Time & \\num{{{self.inference_time:.2f}}} s \\\\
                 Throughput (sentences/sec) & \\num{{{self.throughput_sentences:.2f}}} \\\\
                 Throughput (ms/sentence) & \\num{{{self.ms_per_sentence:.2f}}} \\\\
-                Throughput (tokens/sec) & \\num{{{self.throughput_tokens:.2f}}} \\\\
+                Throughput (words/sec) & \\num{{{self.throughput_words:.2f}}} \\\\
                 \\bottomrule
             \\end{{tabular}}
             \\caption{{Performance metrics for the {self.model_name} model.}}
@@ -106,21 +106,21 @@ class BenchmarkResult:
            \\centering
            \\begin{{tabular}}{{@{{}}lr@{{}}}}
                 \\toprule
-                \\multicolumn{{2}}{{c}}{{Token corrections}} \\\\
+                \\multicolumn{{2}}{{c}}{{Word corrections}} \\\\
                 \\midrule
                 Accuracy (sentences) & \\num{{{self.accuracy_sentences:.2%}}} \\\\
-                Accuracy (tokens) & \\num{{{self.accuracy_tokens:.2%}}} \\\\
+                Accuracy (words) & \\num{{{self.accuracy_words:.2%}}} \\\\
                 \\midrule
                 Correct $\\rightarrow$ Correct & \\num{{{self.corr2corr}}} \\\\
                 Correct $\\rightarrow$ Incorrect & \\num{{{self.corr2incorr}}} \\\\
                 Incorrect $\\rightarrow$ Correct & \\num{{{self.incorr2corr}}} \\\\
                 Incorrect $\\rightarrow$ Incorrect & \\num{{{self.incorr2incorr}}} \\\\
                 \\midrule
-                Precision (tokens) & \\num{{{self.precision:.2%}}} \\\\
-                Recall (tokens) & \\num{{{self.recall:.2%}}} \\\\
-                F0.5 (tokens) & \\num{{{self.f05:.2%}}} \\\\
-                Token Correction Rate & \\num{{{self.token_correction_rate:.2f}}} \\\\
-                Token Incorrection Rate & \\num{{{self.token_incorrection_rate:.2f}}} \\\\
+                Precision (words) & \\num{{{self.precision:.2%}}} \\\\
+                Recall (words) & \\num{{{self.recall:.2%}}} \\\\
+                F0.5 (words) & \\num{{{self.f05:.2%}}} \\\\
+                Word Correction Rate & \\num{{{self.word_correction_rate:.2f}}} \\\\
+                Word Incorrection Rate & \\num{{{self.word_incorrection_rate:.2f}}} \\\\
                 \\bottomrule
             \\end{{tabular}}
             \\caption{{Correction metrics for the {self.model_name} model.}}
@@ -192,15 +192,15 @@ class ModelBenchmark:
         if self.verbose: print(f"Finished warm-up after {time.time() - start} seconds.")
 
         inference_times = []
-        throughputs_tokens = []
+        throughputs_words = []
         throughputs_sentences = []
         ram_usages = []
         gpu_memory_usages = []
-        accuracies_tokens = []
+        accuracies_words = []
         accuracies_sentences = []
-        token_correction = []
-        token_correction_rates = []
-        token_incorrection_rates = []
+        word_correction = []
+        word_correction_rates = []
+        word_incorrection_rates = []
         precisions = []
         recalls = []
         f05s = []
@@ -251,18 +251,18 @@ class ModelBenchmark:
                             incorr2incorr += 1
 
                 ####################################
-                # bare token statistics
+                # bare word statistics
                 ####################################
                 if self.verbose: print(
                         f"corr2corr: {corr2corr}, corr2incorr: {corr2incorr}, incorr2corr: {incorr2corr},"
                         f" incorr2incorr: {incorr2incorr}\n"
                         f"skipped: {skipped}")
 
-                total_tokens = corr2corr + corr2incorr + incorr2corr + incorr2incorr
-                token_correction.append((corr2corr, corr2incorr, incorr2corr, incorr2incorr))
-                accuracies_tokens.append((corr2corr + incorr2corr) / total_tokens)
-                token_correction_rates.append(incorr2corr / (incorr2corr + incorr2incorr))
-                token_incorrection_rates.append(corr2incorr / (corr2incorr + corr2corr))
+                total_words = corr2corr + corr2incorr + incorr2corr + incorr2incorr
+                word_correction.append((corr2corr, corr2incorr, incorr2corr, incorr2incorr))
+                accuracies_words.append((corr2corr + incorr2corr) / total_words)
+                word_correction_rates.append(incorr2corr / (incorr2corr + incorr2incorr))
+                word_incorrection_rates.append(corr2incorr / (corr2incorr + corr2corr))
 
                 ####################################
                 # more convoluted statistics
@@ -275,7 +275,7 @@ class ModelBenchmark:
                 ####################################
                 # time based statistics
                 ####################################
-                throughputs_tokens.append(total_tokens / inference_time)
+                throughputs_words.append(total_words / inference_time)
                 throughputs_sentences.append((len(clean_texts) - skipped) / inference_time)
                 ms_per_sentences.append((inference_time / (len(clean_texts) - skipped)) * 1000)
                 inference_times.append(inference_time)
@@ -292,22 +292,22 @@ class ModelBenchmark:
 
             if self.verbose: print(f"Finished {run + 1}/{num_runs} iteration in {inference_time} seconds.")
 
-        avg_token_correction = np.mean(token_correction, axis=0)
+        avg_word_correction = np.mean(word_correction, axis=0)
         return BenchmarkResult(model_name=model_name,
                                model_size=self._get_model_size(model),
                                inference_time=np.mean(inference_times),
                                gpu_memory_mb=np.mean(gpu_memory_usages),
-                               throughput_tokens=np.mean(throughputs_tokens),
+                               throughput_words=np.mean(throughputs_words),
                                throughput_sentences=np.mean(throughputs_sentences),
                                ms_per_sentence=np.mean(ms_per_sentences),
-                               accuracy_tokens=np.mean(accuracies_tokens),
+                               accuracy_words=np.mean(accuracies_words),
                                accuracy_sentences=np.mean(accuracies_sentences),
-                               corr2corr=avg_token_correction[0],
-                               corr2incorr=avg_token_correction[1],
-                               incorr2corr=avg_token_correction[2],
-                               incorr2incorr=avg_token_correction[3],
-                               token_correction_rate=np.mean(token_correction_rates),
-                               token_incorrection_rate=np.mean(token_incorrection_rates),
+                               corr2corr=avg_word_correction[0],
+                               corr2incorr=avg_word_correction[1],
+                               incorr2corr=avg_word_correction[2],
+                               incorr2incorr=avg_word_correction[3],
+                               word_correction_rate=np.mean(word_correction_rates),
+                               word_incorrection_rate=np.mean(word_incorrection_rates),
                                precision=np.mean(precisions),
                                recall=np.mean(recalls),
                                f05=np.mean(f05s),
