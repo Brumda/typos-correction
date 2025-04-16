@@ -31,7 +31,7 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
 name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained") + (
     "-wo space correction" if args.no_fix_spaces else "")
 
-run = wandb.init(project="Benchmarks"+MODEL[args.model]['model_name'], name=name)
+run = wandb.init(project="Benchmarks-"+name, name=name)
 
 CHECKPOINT = f"checkpoints/{MODEL[args.model]['model_name']}/finetuned_model"
 checker = MODEL[args.model]["model"]

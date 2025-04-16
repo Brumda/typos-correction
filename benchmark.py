@@ -45,7 +45,7 @@ class BenchmarkResult:
 
     typo_detection_model_inference_time: float
     typo_detection_model_ms_per_sentence: float
-    skipped: float
+    skipped: int
 
     def __str__(self):
         return (f"Benchmark results:\n"
@@ -80,7 +80,7 @@ class BenchmarkResult:
     def create_tex_table_perf_metrics(self):
         return f"""
         \\begin{{table}}[h]
-           \centering
+           \\centering
            \\begin{{tabular}}{{@{{}}lr@{{}}}}
                 \\toprule
                 \\multicolumn{{2}}{{c}}{{Model statistics}} \\\\
@@ -103,7 +103,7 @@ class BenchmarkResult:
     def create_tex_table_corr_metrics(self):
         return f"""
         \\begin{{table}}[h]
-           \centering
+           \\centering
            \\begin{{tabular}}{{@{{}}lr@{{}}}}
                 \\toprule
                 \\multicolumn{{2}}{{c}}{{Token corrections}} \\\\
@@ -207,7 +207,6 @@ class ModelBenchmark:
         ms_per_sentences = []
         ms_per_sentences_typo_detect = []
         inference_times_typo_detect = []
-        skipped = 0
 
         if self.verbose: print(f"Starting benchmark iterations...")
         # for run in tqdm(range(num_runs)):
@@ -217,8 +216,8 @@ class ModelBenchmark:
             inference_time = 0
             inference_time_typo_detect = 0
             ram_usage = 0
-            should_skip = 0
             corr2corr, corr2incorr, incorr2corr, incorr2incorr = 0, 0, 0, 0
+            skipped = 0
 
             with self._measure_memory():
                 # for corrupt, clean in tqdm(zip(corrupt_texts, clean_texts)):
@@ -257,7 +256,7 @@ class ModelBenchmark:
                 if self.verbose: print(
                         f"corr2corr: {corr2corr}, corr2incorr: {corr2incorr}, incorr2corr: {incorr2corr},"
                         f" incorr2incorr: {incorr2incorr}\n"
-                        f"skipped: {skipped} should skip: {should_skip}")
+                        f"skipped: {skipped}")
 
                 total_tokens = corr2corr + corr2incorr + incorr2corr + incorr2incorr
                 token_correction.append((corr2corr, corr2incorr, incorr2corr, incorr2incorr))
@@ -316,5 +315,5 @@ class ModelBenchmark:
                                peak_ram_memory_mb=self.peak_ram,
                                typo_detection_model_inference_time=np.mean(inference_times_typo_detect),
                                typo_detection_model_ms_per_sentence=np.mean(ms_per_sentences_typo_detect),
-                               skipped=skipped/num_runs,
+                               skipped=skipped,
                                )
