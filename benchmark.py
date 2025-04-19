@@ -64,11 +64,11 @@ class BenchmarkResult:
                 f"   Correct → Incorrect: {self.corr2incorr}\n"
                 f"   Incorrect → Correct: {self.incorr2corr}\n"
                 f"   Incorrect → Incorrect: {self.incorr2incorr}\n"
-                f"   Recall: {self.recall:.2%}\n"
-                f"   Precision: {self.precision:.2%}\n"
-                f"   F0.5: {self.f05:.2%}\n"
-                f"   Word Correction Rate: {self.word_correction_rate:.2%}\n"
-                f"   Word Incorrection Rate: {self.word_incorrection_rate:.2%}\n"
+                f"   Recall: {self.recall:.2f}\n"
+                f"   Precision: {self.precision:.2f}\n"
+                f"   F0.5: {self.f05:.2f}\n"
+                f"   Word Correction Rate: {self.word_correction_rate:.2f}\n"
+                f"   Word Incorrection Rate: {self.word_incorrection_rate:.2f}\n"
                 f"   Inference Time typo detection: {self.typo_detection_model_inference_time:.2f} s\n"
                 f"   Throughput typo detection: {self.typo_detection_model_ms_per_sentence:.2f} ms/sentence\n"
                 f"   Skipped sentences: {self.skipped:.2f}\n"
@@ -116,9 +116,9 @@ class BenchmarkResult:
                 Incorrect $\\rightarrow$ Correct & \\num{{{self.incorr2corr}}} \\\\
                 Incorrect $\\rightarrow$ Incorrect & \\num{{{self.incorr2incorr}}} \\\\
                 \\midrule
-                Precision (words) & \\num{{{self.precision:.2%}}} \\\\
-                Recall (words) & \\num{{{self.recall:.2%}}} \\\\
-                F0.5 (words) & \\num{{{self.f05:.2%}}} \\\\
+                Precision (words) & \\num{{{self.precision:.2f}}} \\\\
+                Recall (words) & \\num{{{self.recall:.2f}}} \\\\
+                F0.5 (words) & \\num{{{self.f05:.2f}}} \\\\
                 Word Correction Rate & \\num{{{self.word_correction_rate:.2f}}} \\\\
                 Word Incorrection Rate & \\num{{{self.word_incorrection_rate:.2f}}} \\\\
                 \\bottomrule
