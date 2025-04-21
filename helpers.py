@@ -1,4 +1,12 @@
 import pandas as pd
+from neuspell.seq_modeling.helpers import merge_subtokens
+from transformers import BertTokenizerFast
+
+try:
+    from neuspell.commons import spacy_tokenizer
+    from neuspell.seq_modeling.helpers import load_vocab_dict, untokenize_without_unks
+except ImportError:
+    pass
 
 DATA_PATH = "./data/"
 
@@ -46,3 +54,29 @@ def write_column_to_file(series, filename, separator='\n'):
 def count_lines(filename):
     with open(filename, 'r', encoding='utf-8', newline='\n') as f:
         return sum(1 for _ in f)
+
+
+def process_and_merge_elmo(corrupt: str, clean: str, predict: str, path: str, *args):
+    vocab = load_vocab_dict(path)
+
+    corrupt_tokens = [spacy_tokenizer(my_str) for my_str in corrupt]
+    clean_tokens = [spacy_tokenizer(my_str) for my_str in clean]
+    predict_tokens = [spacy_tokenizer(my_str) for my_str in predict]
+
+    corrupt_tokens = untokenize_without_unks(corrupt_tokens, len(corrupt_tokens), vocab, corrupt_tokens)
+    clean_tokens = untokenize_without_unks(clean_tokens, len(clean_tokens), vocab, clean_tokens)
+    predict_tokens = untokenize_without_unks(predict_tokens, len(predict_tokens), vocab, predict_tokens)
+
+    return corrupt_tokens, clean_tokens, predict_tokens
+
+
+def process_and_merge_bert(corrupt: str, clean: str, predict: str, *args):
+    tokenizer = BertTokenizerFast.from_pretrained("bert-base-cased")
+    tokenizer.do_basic_tokenize = True
+    tokenizer.tokenize_chinese_chars = False
+
+    corrupt = merge_subtokens(tokenizer.tokenize(corrupt))
+    clean = merge_subtokens(tokenizer.tokenize(clean))
+    predict = merge_subtokens(tokenizer.tokenize(predict))
+
+    return corrupt, clean, predict

@@ -181,7 +181,9 @@ class ModelBenchmark:
                         model_name: str,
                         predict: Callable[[Any, str], str],
                         warm_up_runs: int = 3,
-                        num_runs: int = 5
+                        num_runs: int = 5,
+                        tokenizer: Any = None,
+                        vocab_path: str = None,
                         ) -> BenchmarkResult:
 
         if self.verbose: print(f"Starting {warm_up_runs} warm-up iterations for {model_name}...")
@@ -222,7 +224,7 @@ class ModelBenchmark:
             with self._measure_memory():
                 # for corrupt, clean in tqdm(zip(corrupt_texts, clean_texts)):
                 for corrupt, clean in zip(corrupt_texts, clean_texts):
-                    # decide if sentence should be fixed or if it's not a typo
+                    # decide if the sentence should be fixed or if it's not a typo
                     start_time_detect = time.time()
                     typo_prob = self.predict_typo.predict(corrupt)
                     inference_time_typo_detect += time.time() - start_time_detect
@@ -238,6 +240,9 @@ class ModelBenchmark:
                         skipped += 1
                         continue
                     # statistics
+                    if tokenizer:
+                        corrupt, clean, prediction = tokenizer(corrupt, clean, prediction, vocab_path)
+
                     acc_sen += (prediction == clean)
                     for corrupt_token, clean_token, predict_token in zip(corrupt.split(), clean.split(),
                                                                          prediction.split()):
@@ -317,7 +322,3 @@ class ModelBenchmark:
                                typo_detection_model_ms_per_sentence=np.mean(ms_per_sentences_typo_detect),
                                skipped=skipped,
                                )
-
-
-
-
