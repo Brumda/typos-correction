@@ -22,8 +22,8 @@ from helpers import get_data_from_file
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="bert", help="Which model to use")
 parser.add_argument("--finetuned", action="store_true", help="Use finetuned model")
-parser.add_argument("--no_fix_spaces", action="store_true", help="Don't use fix spaces workaround for BERT")
-parser.add_argument("--tokenize", action="store_true", help="Use the tokenization from NueSpell to evaluate the model.")
+parser.add_argument("--no_fix_spaces", action="store_true", help="Don't use space correction for models")
+parser.add_argument("--tokenize", action="store_true", help="Use the tokenization from NeuSpell to evaluate the model.")
 
 args = parser.parse_args()
 
