@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N ELMO_Benchmark-space-correction
+#PBS -N ELMO_Benchmark-finetuned-space-correction
 #PBS -l walltime=20:0:0
 #PBS -l select=1:ncpus=1:ngpus=1:mem=20gb:scratch_local=100gb:cluster=adan
 #PBS -m abe
