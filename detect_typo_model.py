@@ -284,10 +284,11 @@ class TypoDetectionModel:
         except Exception as e:
             try:
                 # Second attempt - with strict=False (Elmo model's torch version)
-                self.model.load_state_dict(torch.load(path, strict=False))
+                self.model.load_state_dict(torch.load(path), strict=False)
                 print("Model loaded successfully with strict=False")
             except Exception as e2:
                 print(f"Model couldn't be loaded: {e}\n{e2}")
+                raise Exception(f"Model couldn't be loaded {e}\n{e2}")
         print(f"Model loaded from {path}")
 
 
