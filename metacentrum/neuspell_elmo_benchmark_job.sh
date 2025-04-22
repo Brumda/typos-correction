@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N ELMO_Benchmark-finetuned
+#PBS -N ELMO_Benchmark-space-correction
 #PBS -l walltime=20:0:0
 #PBS -l select=1:ncpus=1:ngpus=1:mem=100gb:scratch_local=100gb:cluster=adan
 #PBS -m abe
@@ -49,8 +49,8 @@ wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
 echo "Starting model benchmarking at $(date)"
-python neuspell_benchmark.py --model="elmo" --finetuned || { echo >&2 "Python script failed"; exit 1; }
+python neuspell_benchmark.py --model="elmo" || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/elmo-finetuned_$(date '+%Y_%m_%d_%H').txt" || { echo >&2 "Failed to results"; exit 1; }
+cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/elmo-space_correction_$(date '+%Y_%m_%d_%H').txt" || { echo >&2 "Failed to results"; exit 1; }
 
 echo "Task finished at $(date)"

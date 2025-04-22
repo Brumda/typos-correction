@@ -239,6 +239,7 @@ class ModelBenchmark:
                     else:
                         skipped += 1
                         continue
+
                     # statistics
                     if tokenizer:
                         corrupt, clean, prediction = tokenizer(corrupt, clean, prediction, vocab_path)

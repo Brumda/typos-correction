@@ -52,7 +52,7 @@ warm_up_runs = 2
 num_runs = 5
 
 benchmark = ModelBenchmark(verbose=True)
-if args.model == "bert" and args.no_fix_spaces:
+if args.no_fix_spaces:
     pred_func = lambda model, data: model.correct_string(data, correct_spaces=False)
 else:
     pred_func = lambda model, data: model.correct_string(data)
