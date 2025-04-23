@@ -66,9 +66,9 @@ def process_and_merge_elmo(corrupt: str, clean: str, predict: str, path: str, *a
     clean_tokens = [spacy_tokenizer(my_str) for my_str in clean]
     predict_tokens = [spacy_tokenizer(my_str) for my_str in predict]
 
-    corrupt_tokens = untokenize_without_unks(corrupt_tokens, len(corrupt_tokens), vocab, corrupt_tokens)
-    clean_tokens = untokenize_without_unks(clean_tokens, len(clean_tokens), vocab, clean_tokens)
-    predict_tokens = untokenize_without_unks(predict_tokens, len(predict_tokens), vocab, predict_tokens)
+    corrupt_tokens = untokenize_without_unks(corrupt_tokens, [len(x) for x in corrupt_tokens], vocab, corrupt_tokens)
+    clean_tokens = untokenize_without_unks(clean_tokens, [len(x) for x in clean_tokens], vocab, clean_tokens)
+    predict_tokens = untokenize_without_unks(predict_tokens, [len(x) for x in predict_tokens], vocab, predict_tokens)
 
     return corrupt_tokens, clean_tokens, predict_tokens
 
