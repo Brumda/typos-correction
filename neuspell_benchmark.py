@@ -71,10 +71,9 @@ res = benchmark.benchmark_model(checker,
                                 clean,
                                 name,
                                 pred_func,
-                                tokenizer=tokenizer,
-                                vocab_path=vocab_path,
                                 warm_up_runs=warm_up_runs,
-                                num_runs=num_runs)
+                                num_runs=num_runs,
+                                tokenizer=tokenizer)
 run.log(res.__dict__)
 
 with open("benchmark_results.txt", "w", encoding="utf-8") as f:

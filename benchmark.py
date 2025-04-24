@@ -182,8 +182,7 @@ class ModelBenchmark:
                         predict: Callable[[Any, str], str],
                         warm_up_runs: int = 3,
                         num_runs: int = 5,
-                        tokenizer: Any = None,
-                        vocab_path: str = None,
+                        tokenizer: Any = None
                         ) -> BenchmarkResult:
 
         if self.verbose: print(f"Starting {warm_up_runs} warm-up iterations for {model_name}...")

@@ -1,5 +1,3 @@
-import os
-
 import pandas as pd
 from neuspell.seq_modeling.helpers import merge_subtokens
 from transformers import BertTokenizerFast
@@ -59,21 +57,15 @@ def count_lines(filename):
         return sum(1 for _ in f)
 
 
-def process_and_merge_elmo(corrupt: str, clean: str, predict: str, path: str, *args):
-    vocab = load_vocab_dict(os.path.join(DEFAULT_DATA_PATH, path))
-
-    corrupt_tokens = [spacy_tokenizer(my_str) for my_str in corrupt]
-    clean_tokens = [spacy_tokenizer(my_str) for my_str in clean]
-    predict_tokens = [spacy_tokenizer(my_str) for my_str in predict]
-
-    corrupt_tokens = untokenize_without_unks(corrupt_tokens, [len(x) for x in corrupt_tokens], vocab, corrupt_tokens)
-    clean_tokens = untokenize_without_unks(clean_tokens, [len(x) for x in clean_tokens], vocab, clean_tokens)
-    predict_tokens = untokenize_without_unks(predict_tokens, [len(x) for x in predict_tokens], vocab, predict_tokens)
+def process_and_merge_elmo(corrupt: str, clean: str, predict: str):
+    corrupt_tokens = [spacy_tokenizer(my_str) for my_str in corrupt.split()]
+    clean_tokens = [spacy_tokenizer(my_str) for my_str in clean.split()]
+    predict_tokens = [spacy_tokenizer(my_str) for my_str in predict.split()]
 
     return corrupt_tokens, clean_tokens, predict_tokens
 
 
-def process_and_merge_bert(corrupt: str, clean: str, predict: str, *args):
+def process_and_merge_bert(corrupt: str, clean: str, predict: str):
     tokenizer = BertTokenizerFast.from_pretrained("bert-base-cased")
     tokenizer.do_basic_tokenize = True
     tokenizer.tokenize_chinese_chars = False
