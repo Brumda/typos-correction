@@ -48,8 +48,6 @@ else:
     checker.from_pretrained()
 
 corrupt, clean = get_data_from_file('test')
-warm_up_runs = 2
-num_runs = 5
 
 benchmark = ModelBenchmark(verbose=True)
 if args.no_fix_spaces:
@@ -71,8 +69,6 @@ res = benchmark.benchmark_model(checker,
                                 clean,
                                 name,
                                 pred_func,
-                                warm_up_runs=warm_up_runs,
-                                num_runs=num_runs,
                                 tokenizer=tokenizer)
 run.log(res.__dict__)
 

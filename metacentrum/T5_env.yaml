@@ -1,0 +1,17 @@
+name: metacentrum_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - sentencepiece
+  - pandas
+  - numpy
+  - transformers
+  - wandb
+  - scikit-learn
+  - pip
+  - pip:
+      - torch
+      - torchaudio
+      - torchvision
+      - happytransformer

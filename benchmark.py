@@ -180,7 +180,7 @@ class ModelBenchmark:
                         clean_texts: list[str],
                         model_name: str,
                         predict: Callable[[Any, str], str],
-                        warm_up_runs: int = 3,
+                        warm_up_runs: int = 2,
                         num_runs: int = 5,
                         tokenizer: Any = None
                         ) -> BenchmarkResult:
