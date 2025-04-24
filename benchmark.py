@@ -241,7 +241,7 @@ class ModelBenchmark:
 
                     # statistics
                     if tokenizer:
-                        corrupt, clean, prediction = tokenizer(corrupt, clean, prediction, vocab_path)
+                        corrupt, clean, prediction = tokenizer(corrupt, clean, prediction)
 
                     acc_sen += (prediction == clean)
                     for corrupt_token, clean_token, predict_token in zip(corrupt.split(), clean.split(),
