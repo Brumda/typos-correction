@@ -1,13 +1,13 @@
 import pandas as pd
-from neuspell.seq_modeling.helpers import merge_subtokens
 from transformers import BertTokenizerFast
 
 try:
+    from neuspell.seq_modeling.helpers import merge_subtokens
     from neuspell.commons import spacy_tokenizer, DEFAULT_DATA_PATH
     from neuspell.seq_modeling.helpers import load_vocab_dict, untokenize_without_unks
 
 except ImportError:
-    pass
+    merge_subtokens, spacy_tokenizer, DEFAULT_DATA_PATH, load_vocab_dict, untokenize_without_unks = None, None, None, None, None
 
 DATA_PATH = "./data/"
 
