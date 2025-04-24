@@ -7,11 +7,11 @@ dependencies:
   - pandas
   - numpy
   - transformers
-  - wandb
   - scikit-learn
   - pip
   - pip:
       - torch
+      - wandb
       - torchaudio
       - torchvision
       - happytransformer
