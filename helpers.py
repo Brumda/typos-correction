@@ -58,11 +58,7 @@ def count_lines(filename):
 
 
 def process_and_merge_elmo(corrupt: str, clean: str, predict: str):
-    corrupt_tokens = [spacy_tokenizer(my_str) for my_str in corrupt.split()]
-    clean_tokens = [spacy_tokenizer(my_str) for my_str in clean.split()]
-    predict_tokens = [spacy_tokenizer(my_str) for my_str in predict.split()]
-
-    return corrupt_tokens, clean_tokens, predict_tokens
+    return spacy_tokenizer(corrupt).strip(), spacy_tokenizer(clean).strip(),spacy_tokenizer(predict).strip()
 
 
 def process_and_merge_bert(corrupt: str, clean: str, predict: str):
