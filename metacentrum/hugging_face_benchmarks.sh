@@ -45,7 +45,7 @@ echo "Logged in wandb at $(date)"
 
 
 echo "Starting model benchmarking at $(date)"
-python hugging_face_benchmarks.py --"$model" || { echo >&2 "Python script failed"; exit 1; }
+python hugging_face_benchmarks.py --model="$model" || { echo >&2 "Python script failed"; exit 1; }
 
 cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/$model_$(date '+%Y_%m_%d_%H').txt"  || { echo >&2 "Failed to results"; exit 1; }
 
