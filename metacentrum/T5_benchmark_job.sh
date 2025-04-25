@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N T5_Benchmark
-#PBS -l walltime=20:0:0
-#PBS -l select=1:ncpus=1:ngpus=1:mem=20gb:scratch_local=100gb:cluster=adan
+#PBS -l walltime=48:0:0
+#PBS -l select=1:ncpus=1:ngpus=1:mem=25gb:scratch_local=50gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
 

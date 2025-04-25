@@ -1,7 +1,7 @@
 #!/bin/bash
-#PBS -N ELMO_Benchmark-tokenized
+#PBS -N ELMO_Benchmark-finetuned-tokenized
 #PBS -l walltime=20:0:0
-#PBS -l select=1:ncpus=1:ngpus=1:mem=20gb:scratch_local=100gb:cluster=adan
+#PBS -l select=1:ncpus=1:ngpus=1:mem=32gb:scratch_local=50gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
 
@@ -49,8 +49,8 @@ wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
 echo "Starting model benchmarking at $(date)"
-python neuspell_benchmark.py --model="elmo" --tokenize --no_fix_spaces || { echo >&2 "Python script failed"; exit 1; }
+python neuspell_benchmark.py --model="elmo" --tokenize --no_fix_spaces --finetuned || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/elmo-tokenized-$(date '+%Y_%m_%d_%H').txt" || { echo >&2 "Failed to results"; exit 1; }
+cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/elmo-finetuned-tokenized-$(date '+%Y_%m_%d_%H').txt" || { echo >&2 "Failed to results"; exit 1; }
 
 echo "Task finished at $(date)"
