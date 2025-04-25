@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N $model_Benchmark-hugging_face
+#PBS -N Benchmark-hugging_face
 #PBS -l walltime=48:0:0
 #PBS -l select=1:ncpus=1:ngpus=1:mem=25gb:scratch_local=50gb:cluster=adan
 #PBS -m abe
