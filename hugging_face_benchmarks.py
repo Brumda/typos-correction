@@ -8,6 +8,7 @@ from helpers import get_data_from_file
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, help="Which model to use")
+args = parser.parse_args()
 
 # models:
 # prithivida/grammar_error_correcter_v1
@@ -15,8 +16,8 @@ parser.add_argument("--model", type=str, help="Which model to use")
 # oliverguhr/spelling-correction-english-base
 # grammarly/coedit-large
 
-args = parser.parse_args()
-run = wandb.init(project=f"Benchmarks-{args.model}", name=f"{args.model}")
+name = args.model.replace("/", "-")
+run = wandb.init(project=f"Benchmarks-{name}", name=name)
 
 print(f"Model used: {args.model}")
 
