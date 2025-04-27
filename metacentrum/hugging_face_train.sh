@@ -48,6 +48,6 @@ python hugging_face_train.py --model="$model" || { echo >&2 "Python script faile
 
 model_path=$(echo "$model" | sed 's/\//-/g')
 
-cp -r "$SCRATCHDIR/$PROJECT_NAME/$model_path-finetuned" "$DATADIR/../models/$model_path-finetuned-$(date '+%Y_%m_%d_%H')"  || { echo >&2 "Failed to results"; exit 1; }
+cp -r "$SCRATCHDIR/$PROJECT_NAME/final_model" "$DATADIR/../models/$model_path-finetuned-$(date '+%Y_%m_%d_%H')"  || { echo >&2 "Failed to results"; exit 1; }
 
 echo "Task finished at $(date)"

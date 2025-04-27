@@ -2,6 +2,7 @@ import argparse
 
 import wandb
 from datasets import Dataset
+from jupyter_server.services.contents import checkpoints
 from transformers import (BartForConditionalGeneration, BartTokenizer, EarlyStoppingCallback,
                           T5ForConditionalGeneration,
                           T5Tokenizer,
@@ -31,7 +32,6 @@ qsub -N vennify-t5-base-grammar-correction -v 'model=vennify/t5-base-grammar-cor
 
 
 """
-
 models = {"T5":
               ["prithivida/grammar_error_correcter_v1",
                "grammarly/coedit-large", ],
@@ -61,8 +61,10 @@ else:
     raise ValueError("Model not found")
 
 # load and preprocess data
-train_data = get_data_from_file("train")
-dev_data = get_data_from_file("dev")
+# train_data = get_data_from_file("train")
+# dev_data = get_data_from_file("dev")
+train_data = get_data_from_file("small")
+dev_data = get_data_from_file("small")
 
 train_dataset = Dataset.from_dict({"source": train_data[0], "target": train_data[1]})
 dev_dataset = Dataset.from_dict({"source": dev_data[0], "target": dev_data[1]})
@@ -85,11 +87,12 @@ def preprocess_function(data):
 train_dataset = train_dataset.map(preprocess_function, batched=True)
 dev_dataset = dev_dataset.map(preprocess_function, batched=True)
 
-save_path = "./" + name + "-finetuned"
 # train
 training_args = TrainingArguments(
-        output_dir=save_path,
+        output_dir="checkpoints",
         eval_strategy="epoch",
+        save_strategy="epoch",
+        save_total_limit=3,
         learning_rate=1e-5,
         num_train_epochs=10,
         load_best_model_at_end=True,
@@ -109,8 +112,8 @@ trainer = Trainer(
 )
 
 trainer.train()
-model.save_pretrained(save_path)
-tokenizer.save_pretrained(save_path)
-print(f"Model saved at {save_path}")
+model.save_pretrained("./final_model")
+tokenizer.save_pretrained("./final_model")
+print(f"Model saved at ./final_model/")
 
 wandb.finish()
