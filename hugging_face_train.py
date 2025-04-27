@@ -20,6 +20,8 @@ grammarly/coedit-large
 
 pszemraj/bart-base-grammar-synthesis
 oliverguhr/spelling-correction-english-base
+
+vennify/t5-base-grammar-correction
 """
 
 models = {"T5":
@@ -27,7 +29,9 @@ models = {"T5":
                "grammarly/coedit-large", ],
           "BART":
               ["pszemraj/bart-base-grammar-synthesis",
-               "oliverguhr/spelling-correction-english-base", ]}
+               "oliverguhr/spelling-correction-english-base", ],
+          "happy":
+              ["vennify/t5-base-grammar-correction"], }
 
 name = args.model.replace("/", "-")
 wandb.init(project="finetuning-" + name, name=name)
@@ -38,6 +42,13 @@ if args.model in models["T5"]:
 elif args.model in models["BART"]:
     model = BartForConditionalGeneration.from_pretrained(args.model)
     tokenizer = BartTokenizer.from_pretrained(args.model)
+elif args.model in models["happy"]:
+    from happytransformer import HappyTextToText
+
+    happy_tt = HappyTextToText("T5", args.model)
+    model = happy_tt.model
+    tokenizer = happy_tt.tokenizer
+
 else:
     raise ValueError("Model not found")
 
@@ -68,7 +79,7 @@ dev_dataset = dev_dataset.map(preprocess_function, batched=True)
 
 # train
 training_args = TrainingArguments(
-        output_dir="./"  + name + "-finetuned",
+        output_dir="./" + name + "-finetuned",
         evaluation_strategy="epoch",
         learning_rate=1e-5,
         per_device_train_batch_size=8,
@@ -93,7 +104,7 @@ trainer = Trainer(
 
 trainer.train()
 
-model.save_pretrained("./"  + name + "-finetuned")
-tokenizer.save_pretrained("./"  + name + "-finetuned")
+model.save_pretrained("./" + name + "-finetuned")
+tokenizer.save_pretrained("./" + name + "-finetuned")
 
 wandb.finish()

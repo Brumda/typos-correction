@@ -34,7 +34,7 @@ WANDB_API_KEY=$(cat $DATADIR/../wandb_key)
 module load mambaforge
 
 echo "Creating conda environment at $(date)"
-mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/T5_env.yaml || { echo >&2 "Failed to create Conda environment"; exit 1; }
+mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/t5_env.yaml || { echo >&2 "Failed to create Conda environment"; exit 1; }
 source activate "$SCRATCHDIR/tmp_env" || { echo >&2 "Failed to activate Conda environment"; exit 1; }
 echo "Environment created at $(date)"
 
@@ -43,7 +43,7 @@ echo "Logged in wandb at $(date)"
 
 
 echo "Starting model benchmarking at $(date)"
-python T5_benchmark.py || { echo >&2 "Python script failed"; exit 1; }
+python t5_benchmark.py || { echo >&2 "Python script failed"; exit 1; }
 
 cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/t5_$(date '+%Y_%m_%d_%H').txt"  || { echo >&2 "Failed to results"; exit 1; }
 
