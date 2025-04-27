@@ -15,7 +15,7 @@ from helpers import DATA_PATH
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="bert", help="Which model to use")
-parser.add_argument("--program_test", default=False, type=bool, help="Test the program on small data")
+parser.add_argument("--program_test", action="store_true", help="Test the program on small data")
 parser.add_argument("--current_epoch", default=1, type=int, help="Epoch to be trained next")
 parser.add_argument("--train_epochs", default=5, type=int, help="How many epochs to train")
 

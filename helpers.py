@@ -14,7 +14,7 @@ DATA_PATH = "./data/"
 
 def get_data_from_file(data_type: str = 'train') -> tuple[list[str], list[str]]:
     """
-    Options: ['train', 'test', 'small']
+    Options: ['train', 'dev', test', 'small']
     Returns data from files in lists.
     Return order: corrupt, clean
     """
