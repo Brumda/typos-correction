@@ -34,7 +34,7 @@ WANDB_API_KEY=$(cat $DATADIR/../wandb_key)
 module load mambaforge
 
 echo "Creating conda environment at $(date)"
-mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/T5_env.yaml || { echo >&2 "Failed to create Conda environment"; exit 1; }
+mamba env create -p "$SCRATCHDIR/tmp_env" -f metacentrum/t5_env.yaml || { echo >&2 "Failed to create Conda environment"; exit 1; }
 source activate "$SCRATCHDIR/tmp_env" || { echo >&2 "Failed to activate Conda environment"; exit 1; }
 echo "Environment created at $(date)"
 

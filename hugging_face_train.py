@@ -17,11 +17,17 @@ args = parser.parse_args()
 models:
 prithivida/grammar_error_correcter_v1
 grammarly/coedit-large
-
 pszemraj/bart-base-grammar-synthesis
 oliverguhr/spelling-correction-english-base
-
 vennify/t5-base-grammar-correction
+
+qsub -N prithivida-grammar_error_correcter_v1 -v 'model=prithivida/grammar_error_correcter_v1' typos-correction/metacentrum/hugging_face_train.sh
+qsub -N grammarly-coedit-large -v 'model=grammarly/coedit-large' typos-correction/metacentrum/hugging_face_train.sh
+qsub -N pszemraj-bart-base-grammar-synthesis -v 'model=pszemraj/bart-base-grammar-synthesis' typos-correction/metacentrum/hugging_face_train.sh
+qsub -N oliverguhr-spelling-correction-english-base -v 'model=oliverguhr/spelling-correction-english-base' typos-correction/metacentrum/hugging_face_train.sh
+qsub -N vennify-t5-base-grammar-correction -v 'model=vennify/t5-base-grammar-correction' typos-correction/metacentrum/hugging_face_train.sh
+
+
 """
 
 models = {"T5":
