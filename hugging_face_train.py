@@ -2,7 +2,6 @@ import argparse
 
 import wandb
 from datasets import Dataset
-from jupyter_server.services.contents import checkpoints
 from transformers import (BartForConditionalGeneration, BartTokenizer, EarlyStoppingCallback,
                           T5ForConditionalGeneration,
                           T5Tokenizer,
@@ -61,10 +60,8 @@ else:
     raise ValueError("Model not found")
 
 # load and preprocess data
-# train_data = get_data_from_file("train")
-# dev_data = get_data_from_file("dev")
-train_data = get_data_from_file("small")
-dev_data = get_data_from_file("small")
+train_data = get_data_from_file("train")
+dev_data = get_data_from_file("dev")
 
 train_dataset = Dataset.from_dict({"source": train_data[0], "target": train_data[1]})
 dev_dataset = Dataset.from_dict({"source": dev_data[0], "target": dev_data[1]})
