@@ -17,8 +17,10 @@ args = parser.parse_args()
 models:
 prithivida/grammar_error_correcter_v1
 grammarly/coedit-large
+
 pszemraj/bart-base-grammar-synthesis
 oliverguhr/spelling-correction-english-base
+
 vennify/t5-base-grammar-correction
 
 qsub -N prithivida-grammar_error_correcter_v1 -v 'model=prithivida/grammar_error_correcter_v1' typos-correction/metacentrum/hugging_face_train.sh
@@ -83,15 +85,13 @@ def preprocess_function(data):
 train_dataset = train_dataset.map(preprocess_function, batched=True)
 dev_dataset = dev_dataset.map(preprocess_function, batched=True)
 
+save_path = "./" + name + "-finetuned"
 # train
 training_args = TrainingArguments(
-        output_dir="./" + name + "-finetuned",
-        evaluation_strategy="epoch",
+        output_dir=save_path,
+        eval_strategy="epoch",
         learning_rate=1e-5,
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=8,
         num_train_epochs=10,
-        weight_decay=0.01,
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
         greater_is_better=False,
@@ -109,8 +109,8 @@ trainer = Trainer(
 )
 
 trainer.train()
-
-model.save_pretrained("./" + name + "-finetuned")
-tokenizer.save_pretrained("./" + name + "-finetuned")
+model.save_pretrained(save_path)
+tokenizer.save_pretrained(save_path)
+print(f"Model saved at {save_path}")
 
 wandb.finish()
