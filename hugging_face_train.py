@@ -50,8 +50,12 @@ ids = {"prithivida/grammar_error_correcter_v1":       "slp8raqq",
        "vennify/t5-base-grammar-correction":          "mdrruc3d", }
 
 name = args.model.replace("/", "-")
+print(f"Model used: {args.model}\nModel name: {name}")
+
 if args.from_file:
-    model_path = CHECKPOINTS + name + "/"
+    print("Continuing training from previous checkpoint")
+    model_path = CHECKPOINTS + name
+    print(f"Model path: {model_path}")
     m_id = ids[args.model]
     wandb.init(project="finetuning-" + name, name=name, id=m_id, resume="allow")
 else:
@@ -72,8 +76,7 @@ elif args.model in models["happy"]:
     if args.from_file:
         happy_tt = HappyTextToText(
                 model_type="T5",
-                model_name="t5-base",
-                load_path=model_path,
+                model_name=model_path,
         )
     else:
         happy_tt = HappyTextToText("T5", model_path)

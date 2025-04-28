@@ -4,7 +4,7 @@ experiments.ipynb
 autocorrect.py
 wandb_key
 detect_typo_models
-
+checkpoints
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

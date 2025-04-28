@@ -43,8 +43,7 @@ wandb login "$WANDB_API_KEY" || { echo >&2 "Failed to log into wandb"; exit 1; }
 echo "Logged in wandb at $(date)"
 
 
-echo "Starting model benchmarking at $(date)"
-echo "Model is $model"
+echo "Starting model training at $(date)"
 python hugging_face_train.py --model="$model" --from_file || { echo >&2 "Python script failed"; exit 1; }
 
 model_path=$(echo "$model" | sed 's/\//-/g')
