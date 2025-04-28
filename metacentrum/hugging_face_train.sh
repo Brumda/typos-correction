@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l walltime=48:0:0
-#PBS -l select=1:ncpus=1:ngpus=1:gpu_mem=44gb:mem=25gb:scratch_local=80gb
+#PBS -l select=1:ncpus=1:ngpus=1:gpu_mem=44gb:mem=50gb:scratch_local=100gb
 #PBS -m abe
 #PBS -j oe
 
@@ -44,7 +44,7 @@ echo "Logged in wandb at $(date)"
 
 
 echo "Starting model training at $(date)"
-python hugging_face_train.py --model="$model" --from_file || { echo >&2 "Python script failed"; exit 1; }
+python hugging_face_train.py --model="$model" || { echo >&2 "Python script failed"; exit 1; }
 
 model_path=$(echo "$model" | sed 's/\//-/g')
 

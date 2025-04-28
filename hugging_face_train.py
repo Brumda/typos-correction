@@ -60,7 +60,7 @@ if args.from_file:
     wandb.init(project="finetuning-" + name, name=name, id=m_id, resume="allow")
 else:
     model_path = args.model
-    wandb.init(project="finetuning-" + name, name=name)
+    wandb.init(project="finetuning-" + name, name=name + "-fine-tuned")
 
 if args.model in models["T5"]:
     model = T5ForConditionalGeneration.from_pretrained(pretrained_model_name_or_path=model_path,
@@ -115,9 +115,9 @@ training_args = TrainingArguments(
         output_dir="checkpoints",
         eval_strategy="epoch",
         save_strategy="epoch",
-        save_total_limit=3,
+        save_total_limit=1,
         learning_rate=1e-5,
-        num_train_epochs=10,
+        num_train_epochs=20,
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
         greater_is_better=False,
@@ -131,10 +131,11 @@ trainer = Trainer(
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=dev_dataset,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=2)],
 )
 
 trainer.train()
+# save the best model at the end
 model.save_pretrained("./final_model")
 tokenizer.save_pretrained("./final_model")
 print(f"Model saved at ./final_model/")
