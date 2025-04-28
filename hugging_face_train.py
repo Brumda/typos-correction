@@ -11,6 +11,7 @@ from helpers import get_data_from_file
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, required=True, help="Model name")
+parser.add_argument("--from_file", action="store_true", help="Continue training from previous checkpoint")
 args = parser.parse_args()
 
 """
@@ -24,10 +25,10 @@ oliverguhr/spelling-correction-english-base
 vennify/t5-base-grammar-correction
 
 qsub -N prithivida-grammar_error_correcter_v1 -v 'model=prithivida/grammar_error_correcter_v1' typos-correction/metacentrum/hugging_face_train.sh
-qsub -N grammarly-coedit-large -v 'model=grammarly/coedit-large' typos-correction/metacentrum/hugging_face_train.sh
 qsub -N pszemraj-bart-base-grammar-synthesis -v 'model=pszemraj/bart-base-grammar-synthesis' typos-correction/metacentrum/hugging_face_train.sh
 qsub -N oliverguhr-spelling-correction-english-base -v 'model=oliverguhr/spelling-correction-english-base' typos-correction/metacentrum/hugging_face_train.sh
 qsub -N vennify-t5-base-grammar-correction -v 'model=vennify/t5-base-grammar-correction' typos-correction/metacentrum/hugging_face_train.sh
+qsub -N grammarly-coedit-large -v 'model=grammarly/coedit-large' typos-correction/metacentrum/hugging_face_train.sh
 
 
 """
@@ -40,22 +41,35 @@ models = {"T5":
           "happy":
               ["vennify/t5-base-grammar-correction"], }
 
+CHECKPOINTS = "./checkpoints/"
+
+ids = {"prithivida/grammar_error_correcter_v1":       "slp8raqq",
+       "grammarly/coedit-large":                      "32euvcuq",
+       "pszemraj/bart-base-grammar-synthesis":        "2rt43d32",
+       "oliverguhr/spelling-correction-english-base": "0ac3norx",
+       "vennify/t5-base-grammar-correction":          "mdrruc3d", }
+
 name = args.model.replace("/", "-")
-wandb.init(project="finetuning-" + name, name=name)
+if args.from_file:
+    model_path = CHECKPOINTS + name
+    m_id = ids[args.model]
+    wandb.init(project="finetuning-" + name, name=name, id=m_id, resume="allow")
+else:
+    model_path = args.model
+    wandb.init(project="finetuning-" + name, name=name)
 
 if args.model in models["T5"]:
-    model = T5ForConditionalGeneration.from_pretrained(args.model)
-    tokenizer = T5Tokenizer.from_pretrained(args.model)
+    model = T5ForConditionalGeneration.from_pretrained(model_path)
+    tokenizer = T5Tokenizer.from_pretrained(model_path)
 elif args.model in models["BART"]:
-    model = BartForConditionalGeneration.from_pretrained(args.model)
-    tokenizer = BartTokenizer.from_pretrained(args.model)
+    model = BartForConditionalGeneration.from_pretrained(model_path)
+    tokenizer = BartTokenizer.from_pretrained(model_path)
 elif args.model in models["happy"]:
     from happytransformer import HappyTextToText
 
-    happy_tt = HappyTextToText("T5", args.model)
+    happy_tt = HappyTextToText("T5", model_path)
     model = happy_tt.model
     tokenizer = happy_tt.tokenizer
-
 else:
     raise ValueError("Model not found")
 
