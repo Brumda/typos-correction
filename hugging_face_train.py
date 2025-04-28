@@ -51,7 +51,7 @@ ids = {"prithivida/grammar_error_correcter_v1":       "slp8raqq",
 
 name = args.model.replace("/", "-")
 if args.from_file:
-    model_path = CHECKPOINTS + name
+    model_path = CHECKPOINTS + name + "/"
     m_id = ids[args.model]
     wandb.init(project="finetuning-" + name, name=name, id=m_id, resume="allow")
 else:
@@ -59,15 +59,24 @@ else:
     wandb.init(project="finetuning-" + name, name=name)
 
 if args.model in models["T5"]:
-    model = T5ForConditionalGeneration.from_pretrained(model_path)
-    tokenizer = T5Tokenizer.from_pretrained(model_path)
+    model = T5ForConditionalGeneration.from_pretrained(pretrained_model_name_or_path=model_path,
+                                                       local_files_only=args.from_file)
+    tokenizer = T5Tokenizer.from_pretrained(pretrained_model_name_or_path=model_path, local_files_only=args.from_file)
 elif args.model in models["BART"]:
-    model = BartForConditionalGeneration.from_pretrained(model_path)
-    tokenizer = BartTokenizer.from_pretrained(model_path)
+    model = BartForConditionalGeneration.from_pretrained(pretrained_model_name_or_path=model_path,
+                                                         local_files_only=args.from_file)
+    tokenizer = BartTokenizer.from_pretrained(pretrained_model_name_or_path=model_path, local_files_only=args.from_file)
 elif args.model in models["happy"]:
     from happytransformer import HappyTextToText
 
-    happy_tt = HappyTextToText("T5", model_path)
+    if args.from_file:
+        happy_tt = HappyTextToText(
+                model_type="T5",
+                model_name="t5-base",
+                load_path=model_path,
+        )
+    else:
+        happy_tt = HappyTextToText("T5", model_path)
     model = happy_tt.model
     tokenizer = happy_tt.tokenizer
 else:
