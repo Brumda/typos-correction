@@ -26,7 +26,7 @@ test -n "$SCRATCHDIR" || { echo >&2 "SCRATCHDIR is not set!"; exit 1; }
 
 echo "Copying data to $SCRATCHDIR at $(date)"
 cp -r "$DATADIR" "$SCRATCHDIR" || { echo >&2 "Error copying data to scratch"; exit 1; }
-cp -r "$DATADIR/../models/checkpoints/" "$SCRATCHDIR" || { echo >&2 "Error copying checkpoints data to scratch"; exit 1; }
+cp -r "$DATADIR/../models/checkpoints/" "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Error copying checkpoints data to scratch"; exit 1; }
 echo "Data copied at $(date)"
 
 cd "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Failed to enter scratch directory"; exit 1; }

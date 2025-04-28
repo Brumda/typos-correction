@@ -5,6 +5,7 @@ autocorrect.py
 wandb_key
 detect_typo_models
 checkpoints
+setup.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -257,3 +258,4 @@ fabric.properties
 # PyPI configuration file
 .pypirc
 /pred_typo_models/
+/setup.sh
