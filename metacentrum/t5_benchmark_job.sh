@@ -1,7 +1,6 @@
 #!/bin/bash
-#PBS -N T5_Benchmark
 #PBS -l walltime=48:0:0
-#PBS -l select=1:ncpus=1:ngpus=1:mem=25gb:scratch_local=50gb:cluster=adan
+#PBS -l select=1:ncpus=1:ngpus=1:mem=32gb:scratch_local=50gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
 
@@ -26,6 +25,7 @@ test -n "$SCRATCHDIR" || { echo >&2 "SCRATCHDIR is not set!"; exit 1; }
 
 echo "Copying data to $SCRATCHDIR at $(date)"
 cp -r "$DATADIR" "$SCRATCHDIR" || { echo >&2 "Error copying data to scratch"; exit 1; }
+cp -r "$DATADIR/../models/checkpoints/" "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Error copying checkpoints data to scratch"; exit 1; }
 echo "Data copied at $(date)"
 
 cd "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Failed to enter scratch directory"; exit 1; }
@@ -43,8 +43,8 @@ echo "Logged in wandb at $(date)"
 
 
 echo "Starting model benchmarking at $(date)"
-python t5_benchmark.py || { echo >&2 "Python script failed"; exit 1; }
+python t5_benchmark.py --finetuned || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/t5_$(date '+%Y_%m_%d_%H').txt"  || { echo >&2 "Failed to results"; exit 1; }
+cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/t5-finetuned_$(date '+%Y_%m_%d_%H').txt"  || { echo >&2 "Failed to results"; exit 1; }
 
 echo "Task finished at $(date)"

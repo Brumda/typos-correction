@@ -1,44 +1,83 @@
 import argparse
 
 import wandb
-from transformers import pipeline
+from transformers import BartForConditionalGeneration, BartTokenizer, pipeline, T5ForConditionalGeneration, T5Tokenizer
 
 from benchmark import ModelBenchmark
 from helpers import get_data_from_file
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, help="Which model to use")
+parser.add_argument("--finetuned", action="store_true", help="Use finetuned model")
 args = parser.parse_args()
+"""
+models:
+pszemraj/bart-base-grammar-synthesis
+oliverguhr/spelling-correction-english-base
 
-# models:
-# prithivida/grammar_error_correcter_v1
-# pszemraj/bart-base-grammar-synthesis
-# oliverguhr/spelling-correction-english-base
-# grammarly/coedit-large
+prithivida/grammar_error_correcter_v1
+grammarly/coedit-large
 
+qsub -N prithivida-grammar_error_correcter_v1-finetuned -v 'model=prithivida-grammar_error_correcter_v1-finetuned' typos-correction/metacentrum/hugging_face_benchmarks.sh
+qsub -N pszemraj-bart-base-grammar-synthesis-finetuned -v 'model=pszemraj-bart-base-grammar-synthesis-finetuned' typos-correction/metacentrum/hugging_face_benchmarks.sh
+qsub -N oliverguhr-spelling-correction-english-base-finetuned -v 'model=oliverguhr-spelling-correction-english-base-finetuned' typos-correction/metacentrum/hugging_face_benchmarks.sh
+qsub -N grammarly-coedit-large-finetuned -v 'model=grammarly-coedit-large-finetuned' typos-correction/metacentrum/hugging_face_benchmarks.sh
+"""
+
+models = {"T5":
+              ["prithivida-grammar_error_correcter_v1-finetuned",
+               "grammarly-coedit-large-finetuned", ],
+          "BART":
+              ["pszemraj-bart-base-grammar-synthesis-finetuned",
+               "oliverguhr-spelling-correction-english-base-finetuned", ],
+          "happy":
+              ["vennify-t5-base-grammar-correction-finetuned"], }
+
+CHECKPOINTS = "./checkpoints/"
 name = args.model.replace("/", "-")
-run = wandb.init(project=f"Benchmarks-{name}", name=name)
-
+run = wandb.init(project=f"Benchmark-{name}", name=name)
 print(f"Model used: {args.model}")
 
-grammar_corrector = pipeline("text2text-generation", model=args.model)
+if args.finetuned:
+    model_path = CHECKPOINTS + name
+    if args.model in models["T5"]:
+        model = T5ForConditionalGeneration.from_pretrained(pretrained_model_name_or_path=model_path,
+                                                           local_files_only=True)
+        tokenizer = T5Tokenizer.from_pretrained(pretrained_model_name_or_path=model_path, local_files_only=True)
 
-if args.model == "grammarly/coedit-large":
-    pred_func = lambda model, text: model(f"Fix grammatical errors in this sentence: {text}")[0]['generated_text']
+    elif args.model in models["BART"]:
+        model = BartForConditionalGeneration.from_pretrained(pretrained_model_name_or_path=model_path,
+                                                             local_files_only=True)
+        tokenizer = BartTokenizer.from_pretrained(pretrained_model_name_or_path=model_path, local_files_only=True)
+    elif args.model in models["happy"]:
+        from happytransformer import HappyTextToText
+
+        happy_tt = HappyTextToText(model_type="T5", model_name=model_path)
+        model = happy_tt.model
+        tokenizer = happy_tt.tokenizer
+    else:
+        raise ValueError("Model not found")
+
+    corrector = pipeline("text2text-generation", model=model, tokenizer=tokenizer)
+else:
+    corrector = pipeline("text2text-generation", model=args.model)
+
+if args.model in ["grammarly/coedit-large", "grammarly-coedit-large-finetuned"]:
+    pred_func = lambda model, text: model(f"grammar: {text}")[0]['generated_text']
 else:
     pred_func = lambda model, text: model(text)[0]['generated_text']
 
 corrupt, clean = get_data_from_file('test')
 benchmark = ModelBenchmark(verbose=True)
-res = benchmark.benchmark_model(grammar_corrector,
+res = benchmark.benchmark_model(corrector,
                                 corrupt,
                                 clean,
-                                f"{args.model}",
+                                f"{name}",
                                 pred_func, )
 
 run.log(res.__dict__)
 with open("benchmark_results.txt", "w", encoding="utf-8") as f:
-    f.write(f"{args.model} benchmark results:\n")
+    f.write(f"{name} benchmark results:\n")
     f.write(f"{res}\n")
     f.write(f"{res.create_tex_table_perf_metrics()}\n")
     f.write(f"{res.create_tex_table_corr_metrics()}\n")

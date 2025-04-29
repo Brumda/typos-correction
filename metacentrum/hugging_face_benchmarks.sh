@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l walltime=48:0:0
-#PBS -l select=1:ncpus=1:ngpus=1:mem=25gb:scratch_local=50gb:cluster=adan
+#PBS -l select=1:ncpus=1:ngpus=1:mem=32gb:scratch_local=80gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
 
@@ -26,6 +26,7 @@ test -n "$SCRATCHDIR" || { echo >&2 "SCRATCHDIR is not set!"; exit 1; }
 
 echo "Copying data to $SCRATCHDIR at $(date)"
 cp -r "$DATADIR" "$SCRATCHDIR" || { echo >&2 "Error copying data to scratch"; exit 1; }
+cp -r "$DATADIR/../models/checkpoints/" "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Error copying checkpoints data to scratch"; exit 1; }
 echo "Data copied at $(date)"
 
 cd "$SCRATCHDIR/$PROJECT_NAME" || { echo >&2 "Failed to enter scratch directory"; exit 1; }
@@ -44,7 +45,7 @@ echo "Logged in wandb at $(date)"
 
 echo "Starting model benchmarking at $(date)"
 echo "Model is $model"
-python hugging_face_benchmarks.py --model="$model" || { echo >&2 "Python script failed"; exit 1; }
+python hugging_face_benchmarks.py --model="$model" --finetuned || { echo >&2 "Python script failed"; exit 1; }
 
 model_path=$(echo "$model" | sed 's/\//-/g')
 
