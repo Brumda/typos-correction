@@ -63,7 +63,7 @@ else:
     corrector = pipeline("text2text-generation", model=args.model)
 
 if args.model in ["grammarly/coedit-large", "grammarly-coedit-large-finetuned"]:
-    pred_func = lambda model, text: model(f"grammar: {text}")[0]['generated_text']
+    pred_func = lambda model, text: model(f"Fix grammatical errors in this sentence: {text}")[0]['generated_text']
 else:
     pred_func = lambda model, text: model(text)[0]['generated_text']
 
