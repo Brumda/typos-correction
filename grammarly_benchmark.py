@@ -18,14 +18,14 @@ prefix:
     Fix grammatical errors
     grammar
 job:
-    qsub -v 'model=grammarly-coedit-large' , 'prefix=grammar'  typos-correction/metacentrum/grammarly_benchmark.sh
-    qsub -v 'model=grammarly-coedit-large' , 'prefix=Fix grammatical errors'  typos-correction/metacentrum/grammarly_benchmark.sh
-    qsub -v 'model=grammarly-coedit-large-finetuned' , 'prefix=Fix grammatical errors'  typos-correction/metacentrum/grammarly_benchmark.sh
+    qsub -v 'model=grammarly-coedit-large , prefix="grammar"'  typos-correction/metacentrum/grammarly_benchmark.sh
+    qsub -v 'model=grammarly-coedit-large , prefix="Fix grammatical errors"'  typos-correction/metacentrum/grammarly_benchmark.sh
+    qsub -v 'model=grammarly-coedit-large-finetuned , prefix="Fix grammatical errors"'  typos-correction/metacentrum/grammarly_benchmark.sh
 """
 model_name = "grammarly-coedit-large-finetuned" if args.finetuned else "grammarly/coedit-large"
 CHECKPOINTS = "./checkpoints/"
 name = model_name.replace("/", "-")
-run = wandb.init(project=f"Benchmark-{name}", name=name)
+run = wandb.init(project=f"Benchmark-{name}", name=name, config={"prefix": args.prefix})
 print(f"Model used: {model_name}")
 
 if args.finetuned:
@@ -39,6 +39,7 @@ else:
     print("Pre-trained model")
     corrector = pipeline("text2text-generation", model=model_name)
 
+print(f"Prefix used: {args.prefix}")
 pred_func = lambda model, text: model(f"{args.prefix}: {text}")[0]['generated_text']
 
 corrupt, clean = get_data_from_file('test')
