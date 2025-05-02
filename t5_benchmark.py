@@ -7,8 +7,8 @@ from benchmark import ModelBenchmark
 from helpers import get_data_from_file
 
 """
-qsub -v 'model=normal' typos-correction/metacentrum/t5_benchmark_job.sh
-qsub -v 'model=finetuned' typos-correction/metacentrum/t5_benchmark_job.sh
+qsub -v 'model=T5-Vennify-normal' typos-correction/metacentrum/t5_benchmark_job.sh
+qsub -v 'model=T5-Vennify-finetuned' typos-correction/metacentrum/t5_benchmark_job.sh
 """
 
 parser = argparse.ArgumentParser()
