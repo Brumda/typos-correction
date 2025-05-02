@@ -1,4 +1,5 @@
 #!/bin/bash
+#PBS -N T5_Benchmark-Vennify
 #PBS -l walltime=48:0:0
 #PBS -l select=1:ncpus=1:ngpus=1:mem=32gb:scratch_local=50gb:cluster=adan
 #PBS -m abe
@@ -43,8 +44,14 @@ echo "Logged in wandb at $(date)"
 
 
 echo "Starting model benchmarking at $(date)"
-python t5_benchmark.py --finetuned || { echo >&2 "Python script failed"; exit 1; }
+if [[ "$model" == *finetuned* ]]; then
+    echo "Finetuned model"
+  python t5_benchmark.py --finetuned || { echo >&2 "Python script failed"; exit 1; }
+else
+    echo "Pre-trained model"
+    python t5_benchmark.py || { echo >&2 "Python script failed"; exit 1; }
+fi
 
-cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/t5-finetuned_$(date '+%Y_%m_%d_%H').txt"  || { echo >&2 "Failed to results"; exit 1; }
+cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/$model-$(date '+%Y_%m_%d_%H').txt"  || { echo >&2 "Failed to results"; exit 1; }
 
 echo "Task finished at $(date)"

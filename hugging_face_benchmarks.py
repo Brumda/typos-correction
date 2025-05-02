@@ -16,22 +16,18 @@ pszemraj/bart-base-grammar-synthesis
 oliverguhr/spelling-correction-english-base
 
 prithivida/grammar_error_correcter_v1
-grammarly/coedit-large
 
 qsub -N prithivida-grammar_error_correcter_v1-finetuned -v 'model=prithivida-grammar_error_correcter_v1-finetuned' typos-correction/metacentrum/hugging_face_benchmarks.sh
 qsub -N pszemraj-bart-base-grammar-synthesis-finetuned -v 'model=pszemraj-bart-base-grammar-synthesis-finetuned' typos-correction/metacentrum/hugging_face_benchmarks.sh
 qsub -N oliverguhr-spelling-correction-english-base-finetuned -v 'model=oliverguhr-spelling-correction-english-base-finetuned' typos-correction/metacentrum/hugging_face_benchmarks.sh
-qsub -N grammarly-coedit-large-finetuned -v 'model=grammarly-coedit-large-finetuned' typos-correction/metacentrum/hugging_face_benchmarks.sh
 """
 
 models = {"T5":
-              ["prithivida-grammar_error_correcter_v1-finetuned",
-               "grammarly-coedit-large-finetuned", ],
+              ["prithivida-grammar_error_correcter_v1-finetuned", ],
           "BART":
               ["pszemraj-bart-base-grammar-synthesis-finetuned",
                "oliverguhr-spelling-correction-english-base-finetuned", ],
-          "happy":
-              ["vennify-t5-base-grammar-correction-finetuned"], }
+          }
 
 CHECKPOINTS = "./checkpoints/"
 name = args.model.replace("/", "-")
@@ -49,12 +45,6 @@ if args.finetuned:
         model = BartForConditionalGeneration.from_pretrained(pretrained_model_name_or_path=model_path,
                                                              local_files_only=True)
         tokenizer = BartTokenizer.from_pretrained(pretrained_model_name_or_path=model_path, local_files_only=True)
-    elif args.model in models["happy"]:
-        from happytransformer import HappyTextToText
-
-        happy_tt = HappyTextToText(model_type="T5", model_name=model_path)
-        model = happy_tt.model
-        tokenizer = happy_tt.tokenizer
     else:
         raise ValueError("Model not found")
 
@@ -62,10 +52,7 @@ if args.finetuned:
 else:
     corrector = pipeline("text2text-generation", model=args.model)
 
-if args.model in ["grammarly/coedit-large", "grammarly-coedit-large-finetuned"]:
-    pred_func = lambda model, text: model(f"Fix grammatical errors in this sentence: {text}")[0]['generated_text']
-else:
-    pred_func = lambda model, text: model(text)[0]['generated_text']
+pred_func = lambda model, text: model(text)[0]['generated_text']
 
 corrupt, clean = get_data_from_file('test')
 benchmark = ModelBenchmark(verbose=True)
