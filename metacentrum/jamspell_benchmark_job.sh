@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -N JAMSPELL_Benchmark
-#PBS -l walltime=20:0:0
+#PBS -l walltime=1:0:0
 #PBS -l select=1:ncpus=1:ngpus=1:mem=20gb:scratch_local=100gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
@@ -51,6 +51,6 @@ tar -xf en.tar.gz || { echo >&2 "Failed to extract model"; exit 1; }
 echo "Starting model benchmarking at $(date)"
 python jamspell_benchmark.py || { echo >&2 "Python script failed"; exit 1; }
 
-cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/jamspell$(date '+%Y_%m_%d_%H').txt"  || { echo >&2 "Failed to results"; exit 1; }
+# cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/jamspell$(date '+%Y_%m_%d_%H').txt"  || { echo >&2 "Failed to results"; exit 1; }
 
 echo "Task finished at $(date)"

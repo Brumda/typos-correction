@@ -4,7 +4,7 @@ import time
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any, Callable
-
+import json
 import numpy as np
 import psutil
 
@@ -175,7 +175,7 @@ class ModelBenchmark:
         return 0
 
     def benchmark_model(self,
-                        model,
+                        model: Any,
                         corrupt_texts: list[str],
                         clean_texts: list[str],
                         model_name: str,
@@ -322,3 +322,42 @@ class ModelBenchmark:
                                typo_detection_model_ms_per_sentence=np.mean(ms_per_sentences_typo_detect),
                                skipped=skipped,
                                )
+
+    def get_wrong_words(self,
+                        model: Any,
+                        corrupt_texts: list[str],
+                        clean_texts: list[str],
+                        predict: Callable[[Any, str], str],
+                        tokenizer: Any = None,
+                        start_idx: int = 0,
+                        num_sen: int = 10) -> list[dict]:
+        """
+        returns a list of dictionaries with the original sentence, inccorected words, corrected words and undetected wrong words
+        prints everything, so don't worry about it
+        """
+        res = []
+        for corrupt, clean in zip(corrupt_texts[start_idx:start_idx + num_sen],
+                                  clean_texts[start_idx:start_idx + num_sen]):
+            typo_prob = self.predict_typo.predict(corrupt)
+            if typo_prob > 0.5:
+                prediction = predict(model, corrupt)
+                print(f"Original: {corrupt}\nPrediction: {prediction}\nClean sentence: {clean}")
+                print(100*'-')
+            else:
+                continue
+            if tokenizer:
+                corrupt, clean, prediction = tokenizer(corrupt, clean, prediction)
+
+            sen_res = {"Correct → Incorrect": [], "Incorrect → Incorrect": [], "Incorrect → Correct": []}
+            for corrupt_token, clean_token, predict_token in zip(corrupt.split(), clean.split(),
+                                                                 prediction.split()):
+                if corrupt_token == clean_token and predict_token != clean_token:
+                    sen_res["Correct → Incorrect"].append({"orig" :corrupt_token,"clean": clean_token, "pred": predict_token})
+                elif corrupt_token != clean_token and predict_token == clean_token:
+                    sen_res["Incorrect → Correct"].append({"orig" :corrupt_token,"clean": clean_token, "pred": predict_token})
+                elif corrupt_token != clean_token and predict_token != clean_token:
+                    sen_res["Incorrect → Incorrect"].append({"orig" :corrupt_token,"clean": clean_token, "pred": predict_token})
+            res.append(sen_res)
+            print(json.dumps(sen_res, indent=2, ensure_ascii=False))
+            print(100*'=')
+        return res

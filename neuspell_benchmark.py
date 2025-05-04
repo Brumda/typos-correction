@@ -27,6 +27,9 @@ parser.add_argument("--tokenize", action="store_true", help="Use the tokenizatio
 
 args = parser.parse_args()
 
+benchmark_flag = False
+
+
 MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "wandb_run_name": "bert-checker",
                   "model":          BertChecker(device="cuda"), },
@@ -37,7 +40,8 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
 name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained") + (
         "-wo space correction" if args.no_fix_spaces else "") + ("-tokenized" if args.tokenize else "")
 
-run = wandb.init(project="Benchmarks-" + name, name=name)
+if benchmark_flag:
+    run = wandb.init(project="Benchmarks-" + name, name=name)
 
 MODEL_FILES = f"checkpoints/{MODEL[args.model]['model_name']}/" + ("finetuned_model" if args.finetuned else "")
 checker = MODEL[args.model]["model"]
@@ -64,18 +68,26 @@ if args.tokenize:
     elif args.model == "bert":
         tokenizer = process_and_merge_bert
 
-res = benchmark.benchmark_model(checker,
-                                corrupt,
-                                clean,
-                                name,
-                                pred_func,
-                                tokenizer=tokenizer)
-run.log(res.__dict__)
+if benchmark_flag:
+    res = benchmark.benchmark_model(checker,
+                                    corrupt,
+                                    clean,
+                                    name,
+                                    pred_func,
+                                    tokenizer=tokenizer)
+    run.log(res.__dict__)
 
-with open("benchmark_results.txt", "w", encoding="utf-8") as f:
-    f.write(name + " benchmark results:\n")
-    f.write(f"{res}\n")
-    f.write(f"{res.create_tex_table_perf_metrics()}\n")
-    f.write(f"{res.create_tex_table_corr_metrics()}\n")
+    with open("benchmark_results.txt", "w", encoding="utf-8") as f:
+        f.write(name + " benchmark results:\n")
+        f.write(f"{res}\n")
+        f.write(f"{res.create_tex_table_perf_metrics()}\n")
+        f.write(f"{res.create_tex_table_corr_metrics()}\n")
 
-run.finish()
+    run.finish()
+else:
+    print(name)
+    benchmark.get_wrong_words(checker,
+                              corrupt,
+                              clean,
+                              pred_func,
+                              tokenizer)

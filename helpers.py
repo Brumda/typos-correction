@@ -58,7 +58,7 @@ def count_lines(filename):
 
 
 def process_and_merge_elmo(corrupt: str, clean: str, predict: str):
-    return spacy_tokenizer(corrupt).strip(), spacy_tokenizer(clean).strip(),spacy_tokenizer(predict).strip()
+    return spacy_tokenizer(corrupt).strip(), spacy_tokenizer(clean).strip(), spacy_tokenizer(predict).strip()
 
 
 def process_and_merge_bert(corrupt: str, clean: str, predict: str):
