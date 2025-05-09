@@ -21,8 +21,6 @@ if args.finetuned:
     print("Fine-tuned model")
     model_path = "./checkpoints/vennify-t5-base-grammar-correction-finetuned"
     happy_tt = HappyTextToText(model_type="T5", model_name=model_path)
-    model = happy_tt.model
-    tokenizer = happy_tt.tokenizer
 else:
     print("Pre-trained model")
     happy_tt = HappyTextToText("T5", "vennify/t5-base-grammar-correction")

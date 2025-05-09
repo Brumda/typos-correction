@@ -29,7 +29,6 @@ args = parser.parse_args()
 
 benchmark_flag = False
 
-
 MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "wandb_run_name": "bert-checker",
                   "model":          BertChecker(device="cuda"), },
@@ -90,4 +89,6 @@ else:
                               corrupt,
                               clean,
                               pred_func,
-                              tokenizer)
+                              tokenizer,
+                              start_idx=666,
+                              num_sen=30)

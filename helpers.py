@@ -7,6 +7,7 @@ try:
     from neuspell.seq_modeling.helpers import load_vocab_dict, untokenize_without_unks
 
 except ImportError:
+    print("NeuSpell not installed")
     merge_subtokens, spacy_tokenizer, DEFAULT_DATA_PATH, load_vocab_dict, untokenize_without_unks = None, None, None, None, None
 
 DATA_PATH = "./data/"
