@@ -341,13 +341,13 @@ class ModelBenchmark:
             typo_prob = self.predict_typo.predict(corrupt)
             if typo_prob > 0.5:
                 prediction = predict(model, corrupt)
-                print(f"Original: {corrupt}\nPrediction: {prediction}\nClean sentence: {clean}")
-                print(100*'-')
             else:
                 continue
             if tokenizer:
                 corrupt, clean, prediction = tokenizer(corrupt, clean, prediction)
 
+            print(f"Original: {corrupt}\nPrediction: {prediction}\nClean sentence: {clean}")
+            print(100*'-')
             sen_res = {"Correct → Incorrect": [], "Incorrect → Incorrect": [], "Incorrect → Correct": []}
             for corrupt_token, clean_token, predict_token in zip(corrupt.split(), clean.split(),
                                                                  prediction.split()):

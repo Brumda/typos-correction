@@ -1,7 +1,7 @@
 #!/bin/bash
-#PBS -N ELMO_Benchmark-examples_1
-#PBS -l walltime=1:0:0
-#PBS -l select=1:ncpus=1:ngpus=1:mem=32gb:scratch_local=50gb
+#PBS -N ELMO_Benchmark-fixed-correction-finetuned
+#PBS -l walltime=24:0:0
+#PBS -l select=1:ncpus=1:ngpus=1:mem=32gb:scratch_local=50gb:cluster=adan
 #PBS -m abe
 #PBS -j oe
 
@@ -51,6 +51,6 @@ echo "Logged in wandb at $(date)"
 echo "Starting model benchmarking at $(date)"
 python neuspell_benchmark.py --model="elmo" --finetuned || { echo >&2 "Python script failed"; exit 1; }
 
-# cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/elmo-finetuned-tokenized-$(date '+%Y_%m_%d_%H').txt" || { echo >&2 "Failed to results"; exit 1; }
+cp "$SCRATCHDIR/$PROJECT_NAME/benchmark_results.txt" "$DATADIR/../benchmark_results/elmo-finetuned-$(date '+%Y_%m_%d_%H').txt" || { echo >&2 "Failed to results"; exit 1; }
 
 echo "Task finished at $(date)"

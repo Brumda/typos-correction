@@ -27,7 +27,7 @@ parser.add_argument("--tokenize", action="store_true", help="Use the tokenizatio
 
 args = parser.parse_args()
 
-benchmark_flag = False
+benchmark_flag = True
 
 MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
                   "wandb_run_name": "bert-checker",
@@ -38,9 +38,6 @@ MODEL = {"bert": {"model_name":     "subwordbert-probwordnoise",
 
 name = MODEL[args.model]["wandb_run_name"] + ("-finetuned" if args.finetuned else "-pretrained") + (
         "-wo space correction" if args.no_fix_spaces else "") + ("-tokenized" if args.tokenize else "")
-
-if benchmark_flag:
-    run = wandb.init(project="Benchmarks-" + name, name=name)
 
 MODEL_FILES = f"checkpoints/{MODEL[args.model]['model_name']}/" + ("finetuned_model" if args.finetuned else "")
 checker = MODEL[args.model]["model"]
@@ -68,6 +65,7 @@ if args.tokenize:
         tokenizer = process_and_merge_bert
 
 if benchmark_flag:
+    run = wandb.init(project="Benchmarks-" + name, name=name)
     res = benchmark.benchmark_model(checker,
                                     corrupt,
                                     clean,
