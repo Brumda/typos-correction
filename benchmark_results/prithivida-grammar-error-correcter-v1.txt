@@ -1,0 +1,74 @@
+prithivida/grammar_error_correcter_v1 benchmark results:
+Benchmark results:
+   Model: prithivida/grammar_error_correcter_v1
+   Size: 850.31 MB
+   Inference Time: 11282.25 s
+   GPU Memory: 965.04 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 43.80 MB
+   Throughput: 4.76 sentences/sec
+   Throughput: 213.25 ms/sentence
+   Throughput: 44.58 words/sec
+   Accuracy sentences: 3.12%
+   Accuracy words: 49.24%
+   Correct → Correct: 229432.0
+   Correct → Incorrect: 185152.0
+   Incorrect → Correct: 14709.0
+   Incorrect → Incorrect: 66539.0
+   Recall: 0.18
+   Precision: 0.07
+   F0.5: 0.08
+   Word Correction Rate: 0.18
+   Word Incorrection Rate: 0.45
+   Inference Time typo detection: 252.69 s
+   Throughput typo detection: 3.72 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{850.31} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{43.80} MB \\
+                GPU Memory & \num{965.04} MB \\
+                \midrule
+                Total Inference Time & \num{11282.25} s \\
+                Throughput (sentences/sec) & \num{4.76} \\
+                Throughput (ms/sentence) & \num{213.25} \\
+                Throughput (words/sec) & \num{44.58} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the prithivida/grammar_error_correcter_v1 model.}
+            \label{tab:prithivida/grammar_error_correcter_v1_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{3.12%} \\
+                Accuracy (words) & \num{49.24%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{229432.0} \\
+                Correct $\rightarrow$ Incorrect & \num{185152.0} \\
+                Incorrect $\rightarrow$ Correct & \num{14709.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{66539.0} \\
+                \midrule
+                Precision (words) & \num{0.07} \\
+                Recall (words) & \num{0.18} \\
+                F0.5 (words) & \num{0.08} \\
+                Word Correction Rate & \num{0.18} \\
+                Word Incorrection Rate & \num{0.45} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the prithivida/grammar_error_correcter_v1 model.}
+            \label{tab:prithivida/grammar_error_correcter_v1_metrics}
+        \end{table}
+

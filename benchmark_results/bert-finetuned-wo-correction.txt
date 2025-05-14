@@ -1,0 +1,74 @@
+bert-checker-finetuned-wo space correction benchmark results:
+Benchmark results:
+   Model: bert-checker-finetuned-wo space correction
+   Size: 706.53 MB
+   Inference Time: 1031.69 s
+   GPU Memory: 1003.85 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 57.33 MB
+   Throughput: 51.28 sentences/sec
+   Throughput: 19.50 ms/sentence
+   Throughput: 758.63 words/sec
+   Accuracy sentences: 2.60%
+   Accuracy words: 21.85%
+   Correct → Correct: 159833.0
+   Correct → Incorrect: 483764.0
+   Incorrect → Correct: 11194.0
+   Incorrect → Incorrect: 127860.0
+   Recall: 8.05%
+   Precision: 2.26%
+   F0.5: 2.64%
+   Word Correction Rate: 8.05%
+   Word Incorrection Rate: 75.17%
+   Inference Time typo detection: 229.49 s
+   Throughput typo detection: 3.38 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{706.53} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{57.33} MB \\
+                GPU Memory & \num{1003.85} MB \\
+                \midrule
+                Total Inference Time & \num{1031.69} s \\
+                Throughput (sentences/sec) & \num{51.28} \\
+                Throughput (ms/sentence) & \num{19.50} \\
+                Throughput (words/sec) & \num{758.63} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the bert-checker-finetuned-wo space correction model.}
+            \label{tab:bert-checker-finetuned-wo space correction_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{2.60%} \\
+                Accuracy (words) & \num{21.85%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{159833.0} \\
+                Correct $\rightarrow$ Incorrect & \num{483764.0} \\
+                Incorrect $\rightarrow$ Correct & \num{11194.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{127860.0} \\
+                \midrule
+                Precision (words) & \num{2.26%} \\
+                Recall (words) & \num{8.05%} \\
+                F0.5 (words) & \num{2.64%} \\
+                Word Correction Rate & \num{0.08} \\
+                Word Incorrection Rate & \num{0.75} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the bert-checker-finetuned-wo space correction model.}
+            \label{tab:bert-checker-finetuned-wo space correction_metrics}
+        \end{table}
+

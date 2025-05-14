@@ -1,0 +1,74 @@
+T5 benchmark results:
+Benchmark results:
+   Model: T5
+   Size: 850.23 MB
+   Inference Time: 15370.10 s
+   GPU Memory: 968.54 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 35.36 MB
+   Throughput: 3.44 sentences/sec
+   Throughput: 290.51 ms/sentence
+   Throughput: 43.72 words/sec
+   Accuracy sentences: 4.99%
+   Accuracy words: 70.29%
+   Correct → Correct: 447328.0
+   Correct → Incorrect: 108863.0
+   Incorrect → Correct: 24998.0
+   Incorrect → Incorrect: 90797.0
+   Recall: 0.22
+   Precision: 0.19
+   F0.5: 0.19
+   Word Correction Rate: 0.22
+   Word Incorrection Rate: 0.20
+   Inference Time typo detection: 227.96 s
+   Throughput typo detection: 3.36 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{850.23} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{35.36} MB \\
+                GPU Memory & \num{968.54} MB \\
+                \midrule
+                Total Inference Time & \num{15370.10} s \\
+                Throughput (sentences/sec) & \num{3.44} \\
+                Throughput (ms/sentence) & \num{290.51} \\
+                Throughput (words/sec) & \num{43.72} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the T5 model.}
+            \label{tab:T5_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{4.99%} \\
+                Accuracy (words) & \num{70.29%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{447328.0} \\
+                Correct $\rightarrow$ Incorrect & \num{108863.0} \\
+                Incorrect $\rightarrow$ Correct & \num{24998.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{90797.0} \\
+                \midrule
+                Precision (words) & \num{0.19} \\
+                Recall (words) & \num{0.22} \\
+                F0.5 (words) & \num{0.19} \\
+                Word Correction Rate & \num{0.22} \\
+                Word Incorrection Rate & \num{0.20} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the T5 model.}
+            \label{tab:T5_metrics}
+        \end{table}
+

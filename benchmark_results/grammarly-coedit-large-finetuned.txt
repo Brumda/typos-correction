@@ -1,0 +1,74 @@
+grammarly-coedit-large-finetuned benchmark results:
+Benchmark results:
+   Model: grammarly-coedit-large-finetuned
+   Size: 2987.26 MB
+   Inference Time: 23809.22 s
+   GPU Memory: 3280.19 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 466.46 MB
+   Throughput: 2.25 sentences/sec
+   Throughput: 450.02 ms/sentence
+   Throughput: 21.09 words/sec
+   Accuracy sentences: 24.84%
+   Accuracy words: 84.89%
+   Correct → Correct: 385212.0
+   Correct → Incorrect: 27251.0
+   Incorrect → Correct: 35082.0
+   Incorrect → Incorrect: 47542.0
+   Recall: 0.42
+   Precision: 0.56
+   F0.5: 0.53
+   Word Correction Rate: 0.42
+   Word Incorrection Rate: 0.07
+   Inference Time typo detection: 267.77 s
+   Throughput typo detection: 3.94 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{2987.26} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{466.46} MB \\
+                GPU Memory & \num{3280.19} MB \\
+                \midrule
+                Total Inference Time & \num{23809.22} s \\
+                Throughput (sentences/sec) & \num{2.25} \\
+                Throughput (ms/sentence) & \num{450.02} \\
+                Throughput (words/sec) & \num{21.09} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the grammarly-coedit-large-finetuned model.}
+            \label{tab:grammarly-coedit-large-finetuned_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{24.84%} \\
+                Accuracy (words) & \num{84.89%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{385212.0} \\
+                Correct $\rightarrow$ Incorrect & \num{27251.0} \\
+                Incorrect $\rightarrow$ Correct & \num{35082.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{47542.0} \\
+                \midrule
+                Precision (words) & \num{0.56} \\
+                Recall (words) & \num{0.42} \\
+                F0.5 (words) & \num{0.53} \\
+                Word Correction Rate & \num{0.42} \\
+                Word Incorrection Rate & \num{0.07} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the grammarly-coedit-large-finetuned model.}
+            \label{tab:grammarly-coedit-large-finetuned_metrics}
+        \end{table}
+

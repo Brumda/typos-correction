@@ -1,0 +1,74 @@
+Jamspell benchmark results:
+Benchmark results:
+   Model: jamspell
+   Size: 0.00 MB
+   Inference Time: 96.43 s
+   GPU Memory: 0.00 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 191.66 MB
+   Throughput: 548.66 sentences/sec
+   Throughput: 1.82 ms/sentence
+   Throughput: 8116.25 tokens/sec
+   Accuracy sentences: 22.89%
+   Accuracy tokens: 82.31%
+   Correct → Correct: 628186.0
+   Correct → Incorrect: 15411.0
+   Incorrect → Correct: 16002.0
+   Incorrect → Incorrect: 123052.0
+   Recall: 11.51%
+   Precision: 50.94%
+   F0.5: 30.23%
+   Token Correction Rate: 11.51%
+   Token Incorrection Rate: 2.39%
+   Inference Time typo detection: 245.19 s
+   Throughput typo detection: 3.61 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{0.00} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{191.66} MB \\
+                GPU Memory & \num{0.00} MB \\
+                \midrule
+                Total Inference Time & \num{96.43} s \\
+                Throughput (sentences/sec) & \num{548.66} \\
+                Throughput (ms/sentence) & \num{1.82} \\
+                Throughput (tokens/sec) & \num{8116.25} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the jamspell model.}
+            \label{tab:jamspell_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Token corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{22.89%} \\
+                Accuracy (tokens) & \num{82.31%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{628186.0} \\
+                Correct $\rightarrow$ Incorrect & \num{15411.0} \\
+                Incorrect $\rightarrow$ Correct & \num{16002.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{123052.0} \\
+                \midrule
+                Precision (tokens) & \num{50.94%} \\
+                Recall (tokens) & \num{11.51%} \\
+                F0.5 (tokens) & \num{30.23%} \\
+                Token Correction Rate & \num{0.12} \\
+                Token Incorrection Rate & \num{0.02} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the jamspell model.}
+            \label{tab:jamspell_metrics}
+        \end{table}
+

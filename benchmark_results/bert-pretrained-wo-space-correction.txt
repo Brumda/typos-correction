@@ -1,0 +1,74 @@
+bert-checker-pretrained-wo space correction benchmark results:
+Benchmark results:
+   Model: bert-checker-pretrained-wo space correction
+   Size: 706.53 MB
+   Inference Time: 1162.92 s
+   GPU Memory: 1003.85 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 9.03 MB
+   Throughput: 45.66 sentences/sec
+   Throughput: 21.98 ms/sentence
+   Throughput: 675.44 tokens/sec
+   Accuracy sentences: 1.71%
+   Accuracy tokens: 21.30%
+   Correct → Correct: 157104.0
+   Correct → Incorrect: 486493.0
+   Incorrect → Correct: 9571.0
+   Incorrect → Incorrect: 129483.0
+   Recall: 6.88%
+   Precision: 1.93%
+   F0.5: 2.25%
+   Token Correction Rate: 6.88%
+   Token Incorrection Rate: 75.59%
+   Inference Time typo detection: 302.04 s
+   Throughput typo detection: 4.45 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{706.53} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{9.03} MB \\
+                GPU Memory & \num{1003.85} MB \\
+                \midrule
+                Total Inference Time & \num{1162.92} s \\
+                Throughput (sentences/sec) & \num{45.66} \\
+                Throughput (ms/sentence) & \num{21.98} \\
+                Throughput (tokens/sec) & \num{675.44} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the bert-checker-pretrained-wo space correction model.}
+            \label{tab:bert-checker-pretrained-wo space correction_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Token corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{1.71%} \\
+                Accuracy (tokens) & \num{21.30%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{157104.0} \\
+                Correct $\rightarrow$ Incorrect & \num{486493.0} \\
+                Incorrect $\rightarrow$ Correct & \num{9571.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{129483.0} \\
+                \midrule
+                Precision (tokens) & \num{1.93%} \\
+                Recall (tokens) & \num{6.88%} \\
+                F0.5 (tokens) & \num{2.25%} \\
+                Token Correction Rate & \num{0.07} \\
+                Token Incorrection Rate & \num{0.76} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the bert-checker-pretrained-wo space correction model.}
+            \label{tab:bert-checker-pretrained-wo space correction_metrics}
+        \end{table}
+

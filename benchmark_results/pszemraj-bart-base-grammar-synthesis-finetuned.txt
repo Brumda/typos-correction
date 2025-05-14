@@ -1,0 +1,74 @@
+pszemraj-bart-base-grammar-synthesis-finetuned benchmark results:
+Benchmark results:
+   Model: pszemraj-bart-base-grammar-synthesis-finetuned
+   Size: 532.04 MB
+   Inference Time: 10333.12 s
+   GPU Memory: 737.51 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 31.85 MB
+   Throughput: 5.12 sentences/sec
+   Throughput: 195.31 ms/sentence
+   Throughput: 75.55 words/sec
+   Accuracy sentences: 49.05%
+   Accuracy words: 84.27%
+   Correct → Correct: 599181.0
+   Correct → Incorrect: 42901.0
+   Incorrect → Correct: 58617.0
+   Incorrect → Incorrect: 79852.0
+   Recall: 0.42
+   Precision: 0.58
+   F0.5: 0.54
+   Word Correction Rate: 0.42
+   Word Incorrection Rate: 0.07
+   Inference Time typo detection: 280.13 s
+   Throughput typo detection: 4.13 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{532.04} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{31.85} MB \\
+                GPU Memory & \num{737.51} MB \\
+                \midrule
+                Total Inference Time & \num{10333.12} s \\
+                Throughput (sentences/sec) & \num{5.12} \\
+                Throughput (ms/sentence) & \num{195.31} \\
+                Throughput (words/sec) & \num{75.55} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the pszemraj-bart-base-grammar-synthesis-finetuned model.}
+            \label{tab:pszemraj-bart-base-grammar-synthesis-finetuned_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{49.05%} \\
+                Accuracy (words) & \num{84.27%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{599181.0} \\
+                Correct $\rightarrow$ Incorrect & \num{42901.0} \\
+                Incorrect $\rightarrow$ Correct & \num{58617.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{79852.0} \\
+                \midrule
+                Precision (words) & \num{0.58} \\
+                Recall (words) & \num{0.42} \\
+                F0.5 (words) & \num{0.54} \\
+                Word Correction Rate & \num{0.42} \\
+                Word Incorrection Rate & \num{0.07} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the pszemraj-bart-base-grammar-synthesis-finetuned model.}
+            \label{tab:pszemraj-bart-base-grammar-synthesis-finetuned_metrics}
+        \end{table}
+

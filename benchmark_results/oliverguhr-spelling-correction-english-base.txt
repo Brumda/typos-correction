@@ -1,0 +1,74 @@
+oliverguhr/spelling-correction-english-base benchmark results:
+Benchmark results:
+   Model: oliverguhr/spelling-correction-english-base
+   Size: 532.04 MB
+   Inference Time: 7284.29 s
+   GPU Memory: 677.94 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 25.42 MB
+   Throughput: 7.27 sentences/sec
+   Throughput: 137.68 ms/sentence
+   Throughput: 69.63 words/sec
+   Accuracy sentences: 1.98%
+   Accuracy words: 59.21%
+   Correct → Correct: 287611.0
+   Correct → Incorrect: 134951.0
+   Incorrect → Correct: 12470.0
+   Incorrect → Incorrect: 71778.0
+   Recall: 0.15
+   Precision: 0.08
+   F0.5: 0.09
+   Word Correction Rate: 0.15
+   Word Incorrection Rate: 0.32
+   Inference Time typo detection: 296.73 s
+   Throughput typo detection: 4.37 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{532.04} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{25.42} MB \\
+                GPU Memory & \num{677.94} MB \\
+                \midrule
+                Total Inference Time & \num{7284.29} s \\
+                Throughput (sentences/sec) & \num{7.27} \\
+                Throughput (ms/sentence) & \num{137.68} \\
+                Throughput (words/sec) & \num{69.63} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the oliverguhr/spelling-correction-english-base model.}
+            \label{tab:oliverguhr/spelling-correction-english-base_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{1.98%} \\
+                Accuracy (words) & \num{59.21%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{287611.0} \\
+                Correct $\rightarrow$ Incorrect & \num{134951.0} \\
+                Incorrect $\rightarrow$ Correct & \num{12470.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{71778.0} \\
+                \midrule
+                Precision (words) & \num{0.08} \\
+                Recall (words) & \num{0.15} \\
+                F0.5 (words) & \num{0.09} \\
+                Word Correction Rate & \num{0.15} \\
+                Word Incorrection Rate & \num{0.32} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the oliverguhr/spelling-correction-english-base model.}
+            \label{tab:oliverguhr/spelling-correction-english-base_metrics}
+        \end{table}
+

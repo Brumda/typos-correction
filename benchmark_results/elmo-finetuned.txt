@@ -1,0 +1,74 @@
+elmo-checker-finetuned benchmark results:
+Benchmark results:
+   Model: elmo-checker-finetuned
+   Size: 800.73 MB
+   Inference Time: 2616.00 s
+   GPU Memory: 1036.98 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 82.44 MB
+   Throughput: 20.23 sentences/sec
+   Throughput: 49.45 ms/sentence
+   Throughput: 293.88 words/sec
+   Accuracy sentences: 12.06%
+   Accuracy words: 48.57%
+   Correct → Correct: 351306.0
+   Correct → Incorrect: 281766.0
+   Incorrect → Correct: 22074.0
+   Incorrect → Incorrect: 113591.0
+   Recall: 0.16
+   Precision: 0.07
+   F0.5: 0.08
+   Word Correction Rate: 0.16
+   Word Incorrection Rate: 0.45
+   Inference Time typo detection: 294.19 s
+   Throughput typo detection: 4.33 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{800.73} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{82.44} MB \\
+                GPU Memory & \num{1036.98} MB \\
+                \midrule
+                Total Inference Time & \num{2616.00} s \\
+                Throughput (sentences/sec) & \num{20.23} \\
+                Throughput (ms/sentence) & \num{49.45} \\
+                Throughput (words/sec) & \num{293.88} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the elmo-checker-finetuned model.}
+            \label{tab:elmo-checker-finetuned_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{12.06%} \\
+                Accuracy (words) & \num{48.57%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{351306.0} \\
+                Correct $\rightarrow$ Incorrect & \num{281766.0} \\
+                Incorrect $\rightarrow$ Correct & \num{22074.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{113591.0} \\
+                \midrule
+                Precision (words) & \num{0.07} \\
+                Recall (words) & \num{0.16} \\
+                F0.5 (words) & \num{0.08} \\
+                Word Correction Rate & \num{0.16} \\
+                Word Incorrection Rate & \num{0.45} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the elmo-checker-finetuned model.}
+            \label{tab:elmo-checker-finetuned_metrics}
+        \end{table}
+

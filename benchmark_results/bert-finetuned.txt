@@ -1,0 +1,74 @@
+bert-checker-finetuned benchmark results:
+Benchmark results:
+   Model: bert-checker-finetuned
+   Size: 706.53 MB
+   Inference Time: 4112.69 s
+   GPU Memory: 1003.85 MB
+   RAM Memory: 0.05 MB
+   Peak RAM Memory: 14.31 MB
+   Throughput: 12.87 sentences/sec
+   Throughput: 77.73 ms/sentence
+   Throughput: 190.31 words/sec
+   Accuracy sentences: 33.03%
+   Accuracy words: 83.48%
+   Correct → Correct: 630514.0
+   Correct → Incorrect: 12863.0
+   Incorrect → Correct: 22613.0
+   Incorrect → Incorrect: 116372.0
+   Recall: 0.16
+   Precision: 0.64
+   F0.5: 0.40
+   Word Correction Rate: 0.16
+   Word Incorrection Rate: 0.02
+   Inference Time typo detection: 464.92 s
+   Throughput typo detection: 6.85 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{706.53} MB \\
+                RAM Memory & \num{0.05} MB \\
+                Peak RAM Memory & \num{14.31} MB \\
+                GPU Memory & \num{1003.85} MB \\
+                \midrule
+                Total Inference Time & \num{4112.69} s \\
+                Throughput (sentences/sec) & \num{12.87} \\
+                Throughput (ms/sentence) & \num{77.73} \\
+                Throughput (words/sec) & \num{190.31} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the bert-checker-finetuned model.}
+            \label{tab:bert-checker-finetuned_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{33.03%} \\
+                Accuracy (words) & \num{83.48%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{630514.0} \\
+                Correct $\rightarrow$ Incorrect & \num{12863.0} \\
+                Incorrect $\rightarrow$ Correct & \num{22613.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{116372.0} \\
+                \midrule
+                Precision (words) & \num{0.64} \\
+                Recall (words) & \num{0.16} \\
+                F0.5 (words) & \num{0.40} \\
+                Word Correction Rate & \num{0.16} \\
+                Word Incorrection Rate & \num{0.02} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the bert-checker-finetuned model.}
+            \label{tab:bert-checker-finetuned_metrics}
+        \end{table}
+

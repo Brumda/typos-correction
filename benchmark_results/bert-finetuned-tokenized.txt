@@ -1,0 +1,74 @@
+bert-checker-finetuned-wo space correction-tokenized benchmark results:
+Benchmark results:
+   Model: bert-checker-finetuned-wo space correction-tokenized
+   Size: 706.53 MB
+   Inference Time: 1326.61 s
+   GPU Memory: 1003.85 MB
+   RAM Memory: -0.00 MB
+   Peak RAM Memory: 42.84 MB
+   Throughput: 39.91 sentences/sec
+   Throughput: 25.07 ms/sentence
+   Throughput: 867.24 words/sec
+   Accuracy sentences: 38.02%
+   Accuracy words: 82.26%
+   Correct → Correct: 921675.0
+   Correct → Incorrect: 4416.0
+   Incorrect → Correct: 24149.0
+   Incorrect → Incorrect: 199543.0
+   Recall: 0.11
+   Precision: 0.85
+   F0.5: 0.36
+   Word Correction Rate: 0.11
+   Word Incorrection Rate: 0.00
+   Inference Time typo detection: 303.16 s
+   Throughput typo detection: 4.47 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{706.53} MB \\
+                RAM Memory & \num{-0.00} MB \\
+                Peak RAM Memory & \num{42.84} MB \\
+                GPU Memory & \num{1003.85} MB \\
+                \midrule
+                Total Inference Time & \num{1326.61} s \\
+                Throughput (sentences/sec) & \num{39.91} \\
+                Throughput (ms/sentence) & \num{25.07} \\
+                Throughput (words/sec) & \num{867.24} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the bert-checker-finetuned-wo space correction-tokenized model.}
+            \label{tab:bert-checker-finetuned-wo space correction-tokenized_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{38.02%} \\
+                Accuracy (words) & \num{82.26%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{921675.0} \\
+                Correct $\rightarrow$ Incorrect & \num{4416.0} \\
+                Incorrect $\rightarrow$ Correct & \num{24149.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{199543.0} \\
+                \midrule
+                Precision (words) & \num{0.85} \\
+                Recall (words) & \num{0.11} \\
+                F0.5 (words) & \num{0.36} \\
+                Word Correction Rate & \num{0.11} \\
+                Word Incorrection Rate & \num{0.00} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the bert-checker-finetuned-wo space correction-tokenized model.}
+            \label{tab:bert-checker-finetuned-wo space correction-tokenized_metrics}
+        \end{table}
+

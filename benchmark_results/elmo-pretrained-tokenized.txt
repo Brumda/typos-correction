@@ -1,0 +1,74 @@
+elmo-checker-pretrained-wo space correction-tokenized benchmark results:
+Benchmark results:
+   Model: elmo-checker-pretrained-wo space correction-tokenized
+   Size: 800.73 MB
+   Inference Time: 2921.42 s
+   GPU Memory: 1036.98 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 22.16 MB
+   Throughput: 18.11 sentences/sec
+   Throughput: 55.22 ms/sentence
+   Throughput: 332.38 words/sec
+   Accuracy sentences: 10.15%
+   Accuracy words: 74.01%
+   Correct → Correct: 700768.0
+   Correct → Incorrect: 82530.0
+   Incorrect → Correct: 17838.0
+   Incorrect → Incorrect: 169872.0
+   Recall: 0.10
+   Precision: 0.18
+   F0.5: 0.15
+   Word Correction Rate: 0.10
+   Word Incorrection Rate: 0.11
+   Inference Time typo detection: 481.73 s
+   Throughput typo detection: 7.10 ms/sentence
+   Skipped sentences: 14979.00
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{800.73} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{22.16} MB \\
+                GPU Memory & \num{1036.98} MB \\
+                \midrule
+                Total Inference Time & \num{2921.42} s \\
+                Throughput (sentences/sec) & \num{18.11} \\
+                Throughput (ms/sentence) & \num{55.22} \\
+                Throughput (words/sec) & \num{332.38} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the elmo-checker-pretrained-wo space correction-tokenized model.}
+            \label{tab:elmo-checker-pretrained-wo space correction-tokenized_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Word corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{10.15%} \\
+                Accuracy (words) & \num{74.01%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{700768.0} \\
+                Correct $\rightarrow$ Incorrect & \num{82530.0} \\
+                Incorrect $\rightarrow$ Correct & \num{17838.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{169872.0} \\
+                \midrule
+                Precision (words) & \num{0.18} \\
+                Recall (words) & \num{0.10} \\
+                F0.5 (words) & \num{0.15} \\
+                Word Correction Rate & \num{0.10} \\
+                Word Incorrection Rate & \num{0.11} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the elmo-checker-pretrained-wo space correction-tokenized model.}
+            \label{tab:elmo-checker-pretrained-wo space correction-tokenized_metrics}
+        \end{table}
+

@@ -1,0 +1,76 @@
+elmo-checker-pretrained benchmark results:
+Benchmark results:
+   Model: elmo-checker-pretrained
+   Size: 800.73 MB
+   Inference Time: 3126.32 s
+   GPU Memory: 1036.98 MB
+   RAM Memory: 0.00 MB
+   Peak RAM Memory: 17.32 MB
+   Throughput: 16.93 sentences/sec
+   Throughput: 59.09 ms/sentence
+   Throughput: 250.26 tokens/sec
+   Accuracy sentences: 1.89%
+   Accuracy tokens: 27.75%
+   Correct → Correct: 203867.0
+   Correct → Incorrect: 439445.0
+   Incorrect → Correct: 13189.0
+   Incorrect → Incorrect: 125767.0
+   Recall: 9.49%
+   Precision: 2.91%
+   F0.5: 3.38%
+   Token Correction Rate: 9.49%
+   Token Incorrection Rate: 68.31%
+   Inference Time typo detection: 388.07 s
+   Throughput typo detection: 5.72 ms/sentence
+   Skipped sentences: 14979
+   Should have skipped sentences: 4550
+   Skip acc: 0.30
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Model statistics} \\
+                \midrule
+                Model size & \num{800.73} MB \\
+                RAM Memory & \num{0.00} MB \\
+                Peak RAM Memory & \num{17.32} MB \\
+                GPU Memory & \num{1036.98} MB \\
+                \midrule
+                Total Inference Time & \num{3126.32} s \\
+                Throughput (sentences/sec) & \num{16.93} \\
+                Throughput (ms/sentence) & \num{59.09} \\
+                Throughput (tokens/sec) & \num{250.26} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Performance metrics for the elmo-checker-pretrained model.}
+            \label{tab:elmo-checker-pretrained_metrics}
+        \end{table}
+
+
+        \begin{table}[h]
+           \centering
+           \begin{tabular}{@{}lr@{}}
+                \toprule
+                \multicolumn{2}{c}{Token corrections} \\
+                \midrule
+                Accuracy (sentences) & \num{1.89%} \\
+                Accuracy (tokens) & \num{27.75%} \\
+                \midrule
+                Correct $\rightarrow$ Correct & \num{203867.0} \\
+                Correct $\rightarrow$ Incorrect & \num{439445.0} \\
+                Incorrect $\rightarrow$ Correct & \num{13189.0} \\
+                Incorrect $\rightarrow$ Incorrect & \num{125767.0} \\
+                \midrule
+                Precision (tokens) & \num{2.91%} \\
+                Recall (tokens) & \num{9.49%} \\
+                F0.5 (tokens) & \num{3.38%} \\
+                Token Correction Rate & \num{0.09} \\
+                Token Incorrection Rate & \num{0.68} \\
+                \bottomrule
+            \end{tabular}
+            \caption{Correction metrics for the elmo-checker-pretrained model.}
+            \label{tab:elmo-checker-pretrained_metrics}
+        \end{table}
+
