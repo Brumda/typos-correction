@@ -7,7 +7,7 @@ detect_typo_models
 checkpoints
 checkpoints-finetuned
 setup.sh
-model_errors.ipynb
+sandbox.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
