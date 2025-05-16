@@ -4,7 +4,7 @@ import wandb
 from benchmark import ModelBenchmark
 from helpers import get_data_from_file
 
-benchmark_flag = False
+benchmark_flag = True
 corrector = jamspell.TSpellCorrector()
 corrector.LoadLangModel('en.bin')
 

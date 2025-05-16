@@ -42,7 +42,7 @@ class BenchmarkResult:
     precision: float
     f05: float
     word_correction_rate: float
-    word_incorrection_rate: float  # for lack of a better name
+    word_incorrection_rate: float
 
     typo_detection_model_inference_time: float
     typo_detection_model_ms_per_sentence: float
@@ -140,6 +140,7 @@ class ModelBenchmark:
 
     @contextmanager
     def _measure_memory(self):
+        """Doesn't seem to work..."""
         ram_start = self._get_ram_usage()
         try:
             yield

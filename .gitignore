@@ -8,6 +8,7 @@ checkpoints
 checkpoints-finetuned
 setup.sh
 sandbox.ipynb
+upload_model.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
