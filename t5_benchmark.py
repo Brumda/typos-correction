@@ -1,7 +1,7 @@
 import argparse
 
 import wandb
-from happytransformer import HappyTextToText, TTSettings
+from happytransformer import HappyTextToText
 
 from benchmark import ModelBenchmark
 from helpers import get_data_from_file
@@ -25,7 +25,6 @@ else:
     print("Pre-trained model")
     happy_tt = HappyTextToText("T5", "vennify/t5-base-grammar-correction")
 
-pred_args = TTSettings(num_beams=5, min_length=1)
 corrupt, clean = get_data_from_file('test')
 
 benchmark = ModelBenchmark(verbose=True)
@@ -33,7 +32,7 @@ res = benchmark.benchmark_model(happy_tt,
                                 corrupt,
                                 clean,
                                 "T5 Vennify" + "-finetuned" if args.finetuned else "",
-                                lambda model, data: model.generate_text(f"grammar: {data}", args=pred_args).text, )
+                                lambda model, data: model.generate_text(f"grammar: {data}").text, )
 run.log(res.__dict__)
 with open("benchmark_results.txt", "w", encoding="utf-8") as f:
     f.write("T5" + "-finetuned" if args.finetuned else "" + " benchmark results:\n")

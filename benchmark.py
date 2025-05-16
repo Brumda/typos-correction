@@ -1,10 +1,11 @@
 import gc
+import json
 import os
 import time
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any, Callable
-import json
+
 import numpy as np
 import psutil
 
@@ -182,8 +183,9 @@ class ModelBenchmark:
                         predict: Callable[[Any, str], str],
                         warm_up_runs: int = 2,
                         num_runs: int = 5,
-                        tokenizer: Any = None
-                        ) -> BenchmarkResult:
+                        tokenizer: Any = None,
+                        typo_prob_threshold=0.5,
+                        f_score_beta=0.5) -> BenchmarkResult:
 
         if self.verbose: print(f"Starting {warm_up_runs} warm-up iterations for {model_name}...")
         start = time.time()
@@ -228,7 +230,7 @@ class ModelBenchmark:
                     typo_prob = self.predict_typo.predict(corrupt)
                     inference_time_typo_detect += time.time() - start_time_detect
 
-                    if typo_prob > 0.5:
+                    if typo_prob > typo_prob_threshold:
                         # prediction
                         ram_before = self._get_ram_usage()
                         start_time = time.time()
@@ -274,7 +276,8 @@ class ModelBenchmark:
                 ####################################
                 precisions.append(incorr2corr / (incorr2corr + corr2incorr))
                 recalls.append(incorr2corr / (incorr2corr + incorr2incorr))
-                f05s.append((1.25 * precisions[-1] * recalls[-1]) / (0.25 * precisions[-1] + recalls[-1]))
+                f05s.append(((1 + f_score_beta**2) * precisions[-1] * recalls[-1]) / (
+                        f_score_beta**2 * precisions[-1] + recalls[-1]))
                 accuracies_sentences.append(acc_sen / (len(clean_texts) - skipped))
 
                 ####################################
@@ -330,7 +333,8 @@ class ModelBenchmark:
                         predict: Callable[[Any, str], str],
                         tokenizer: Any = None,
                         start_idx: int = 0,
-                        num_sen: int = 10) -> list[dict]:
+                        num_sen: int = 10,
+                        typo_prob_threshold=0.5) -> list[dict]:
         """
         returns a list of dictionaries with the original sentence, inccorected words, corrected words and undetected wrong words
         prints everything, so don't worry about it
@@ -339,7 +343,7 @@ class ModelBenchmark:
         for corrupt, clean in zip(corrupt_texts[start_idx:start_idx + num_sen],
                                   clean_texts[start_idx:start_idx + num_sen]):
             typo_prob = self.predict_typo.predict(corrupt)
-            if typo_prob > 0.5:
+            if typo_prob > typo_prob_threshold:
                 prediction = predict(model, corrupt)
             else:
                 continue
@@ -347,17 +351,20 @@ class ModelBenchmark:
                 corrupt, clean, prediction = tokenizer(corrupt, clean, prediction)
 
             print(f"Original: {corrupt}\nPrediction: {prediction}\nClean sentence: {clean}")
-            print(100*'-')
+            print(100 * '-')
             sen_res = {"Correct → Incorrect": [], "Incorrect → Incorrect": [], "Incorrect → Correct": []}
             for corrupt_token, clean_token, predict_token in zip(corrupt.split(), clean.split(),
                                                                  prediction.split()):
                 if corrupt_token == clean_token and predict_token != clean_token:
-                    sen_res["Correct → Incorrect"].append({"orig" :corrupt_token,"clean": clean_token, "pred": predict_token})
+                    sen_res["Correct → Incorrect"].append(
+                            {"orig": corrupt_token, "clean": clean_token, "pred": predict_token})
                 elif corrupt_token != clean_token and predict_token == clean_token:
-                    sen_res["Incorrect → Correct"].append({"orig" :corrupt_token,"clean": clean_token, "pred": predict_token})
+                    sen_res["Incorrect → Correct"].append(
+                            {"orig": corrupt_token, "clean": clean_token, "pred": predict_token})
                 elif corrupt_token != clean_token and predict_token != clean_token:
-                    sen_res["Incorrect → Incorrect"].append({"orig" :corrupt_token,"clean": clean_token, "pred": predict_token})
+                    sen_res["Incorrect → Incorrect"].append(
+                            {"orig": corrupt_token, "clean": clean_token, "pred": predict_token})
             res.append(sen_res)
             print(json.dumps(sen_res, indent=2, ensure_ascii=False))
-            print(100*'=')
+            print(100 * '=')
         return res
